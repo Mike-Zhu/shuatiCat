@@ -1,0 +1,12 @@
+$idx:2px;
+$bg:#FF6961;
+button{
+    float: right;
+    background-color: $bg;
+    width: 69 * $idx;
+    height: 25 * $idx;
+    font-size: 12 * $idx;
+    line-height: 25 * $idx;
+    border:none;
+    color: #fff;
+}

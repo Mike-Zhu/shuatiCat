@@ -1,0 +1,27 @@
+$h:2px;
+.select{
+    background-color: #fafafa;
+    .down-title{
+        .title{
+            font-size: 16 * $h;
+            line-height: 1.5;
+            height: 32 * $h;
+            padding: 0 16 * $h ;
+            padding-top:16 * $h;
+        }
+        .content{
+            height: 72 * $h;
+            font-size: 14 * $h;
+            line-height: 72 * $h;
+            background-color: #fff;
+            padding: 0 16 * $h;
+            margin-bottom: 8 * $h;
+            &:last-child{
+                margin-bottom: 0 * $h;
+            }
+            button{
+                margin: 23 * $h 20 * $h 0 0;
+            }
+        }
+    }
+}

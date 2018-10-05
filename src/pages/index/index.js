@@ -57,15 +57,9 @@ class Index extends Component {
           <Text className="title">2016 海南高考</Text>
           <Button onClick={this.routeGo} data-value="college">SELECT</Button>
         </View>
-        <View>
+        {/* <View>
           <ec-canvas id='mychart-dom-area' canvas-id='mychart-area' ec={this.state.ec}></ec-canvas>
-        </View>
-        <Button className='add_btn' onClick={this.props.add}>+</Button>
-        <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-        <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-        <Button className='dec_btn' onClick={this.routeGo}>routeGo</Button>
-        <View><Text>{this.props.counter.num}</Text></View>
-        <View><Text>Hello, World</Text></View>
+        </View> */}
       </View>
     )
   }
