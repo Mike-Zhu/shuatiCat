@@ -1,0 +1,28 @@
+$idx:2px;
+$bg:#FF6961;
+.main{
+    background-color: #f5f5f5;
+    border-top:1px solid transparent;
+    .select-paper{
+        margin: $idx * 8 0;
+        height: $idx * 35;
+        background-color: #fff;
+        padding: $idx * 10 $idx * 24 0;
+        .title{
+            line-height: $idx * 20;
+            margin: $idx * 2;
+            font-size: 18 * $idx;
+        }
+        button{
+            float: right;
+            background-color: $bg;
+            width: 69 * $idx;
+            height: 25 * $idx;
+            font-size: 12 * $idx;
+            line-height: 25 * $idx;
+            border:none;
+            color: #fff;
+        }
+    }
+    
+}
