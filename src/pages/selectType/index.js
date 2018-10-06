@@ -55,7 +55,7 @@ export default class SelectType extends Component {
             <View className="select">
                 {minType.map(content => (
                     <View class="content" key={content}>
-                        {content}
+                        <Text>{content}</Text>
                         <Button onClick={this.routeGo} data-value={content}>SELECT</Button>
                     </View>
                 ))}

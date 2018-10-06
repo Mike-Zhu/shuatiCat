@@ -19,6 +19,13 @@ $h:2px;
             &:last-child{
                 margin-bottom: 0 * $h;
             }
+            Text{
+                width: 200 * $h;
+                display: inline-block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
             button{
                 margin: 23 * $h 20 * $h 0 0;
             }

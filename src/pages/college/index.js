@@ -57,7 +57,7 @@ export default class College extends Component {
                         <View>
                             {second.content.map(content => (
                                 <View class="content" key={content.secondType}>
-                                    {content.secondType}
+                                    <Text>{content.secondType}</Text>
                                     <Button onClick={this.routeGo} data-value={content}>SELECT</Button>
                                 </View>
                             ))}

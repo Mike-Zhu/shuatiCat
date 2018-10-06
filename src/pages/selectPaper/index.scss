@@ -12,6 +12,13 @@ page{
         background-color: #fff;
         padding: 0 16 * $h;
         margin-top: 8 * $h;
+        Text{
+            width: 200 * $h;
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
         button{
             margin: 23 * $h 20 * $h 0 0;
         }

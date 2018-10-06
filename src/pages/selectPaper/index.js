@@ -12,9 +12,7 @@ import './index.scss'
         select
     }),
     (dispatch) => ({
-        // add() {
-        //     dispatch(add())
-        // },
+
     })
 )
 export default class SelectType extends Component {
@@ -57,7 +55,7 @@ export default class SelectType extends Component {
             <View className="select">
                 {paperList.map(content => (
                     <View class="content" key={content.id}>
-                        {content.title}
+                        <Text>{content.title}</Text>
                         <Button onClick={this.routeGo} data-id={content.id}>SELECT</Button>
                     </View>
                 ))}
