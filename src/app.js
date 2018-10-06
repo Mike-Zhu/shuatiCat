@@ -3,7 +3,7 @@ import '@tarojs/async-await'
 import { Provider } from '@tarojs/redux'
 
 import Index from './pages/index'
-import Test from './pages/test'
+import SelectPaper from './pages/selectPaper'
 import College from './pages/college'
 import SelectType from './pages/selectType'
 
@@ -18,9 +18,9 @@ class App extends Component {
   config = {
     pages: [
       'pages/index/index',
-      'pages/test/index',
       'pages/college/index',
-      'pages/selectType/index'
+      'pages/selectType/index',
+      'pages/selectPaper/index',
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -34,7 +34,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Index />
-        <Test />
+        <SelectPaper />
         <College />
         <SelectType />
       </Provider>

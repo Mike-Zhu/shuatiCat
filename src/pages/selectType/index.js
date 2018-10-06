@@ -1,9 +1,6 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-
-import { add, minus, asyncAdd } from '../../actions/counter'
-import http, { user_id } from '../../service/http'
 import './index.scss'
 
 
@@ -23,9 +20,6 @@ export default class SelectType extends Component {
         super(props)
     }
 
-    api = {
-        getSecondType: "api/getSecondType"
-    }
     config = {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#FF6961",
@@ -48,18 +42,21 @@ export default class SelectType extends Component {
             });
         }
     }
-    routeGo() {
-
+    routeGo(e) {
+        let dataset = e.target.dataset || {}
+        let value = dataset.value || {}
+        Taro.navigateTo({
+            url: `/pages/selectPaper/index?type=${value}`
+        })
     }
     render() {
         let { select: { minType } } = this.props
-        console.log(minType)
         return (
             <View className="select">
                 {minType.map(content => (
                     <View class="content" key={content}>
                         {content}
-                        <Button onClick={this.routeGo} data-value="college">SELECT</Button>
+                        <Button onClick={this.routeGo} data-value={content}>SELECT</Button>
                     </View>
                 ))}
             </View>

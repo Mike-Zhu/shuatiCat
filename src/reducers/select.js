@@ -1,7 +1,8 @@
 
 const INITIAL_STATE = {
     secondType: [],//第一层
-    minType:[],//第二层
+    minType: [],//第二层
+    paperList: [],//名字的集合
 }
 
 export default function select(state = INITIAL_STATE, action) {
@@ -14,7 +15,12 @@ export default function select(state = INITIAL_STATE, action) {
         case 'setMinType':
             return {
                 ...state,
-                minType:action.payload
+                minType: action.payload
+            }
+        case 'setPaperList':
+            return {
+                ...state,
+                paperList: action.payload
             }
         default:
             return state

@@ -1,0 +1,19 @@
+$h:2px;
+page{
+    background-color: #fafafa;
+}
+.select{
+    background-color: #fafafa;
+    border-top: 1rpx solid transparent;
+    .content{
+        height: 72 * $h;
+        font-size: 14 * $h;
+        line-height: 72 * $h;
+        background-color: #fff;
+        padding: 0 16 * $h;
+        margin-top: 8 * $h;
+        button{
+            margin: 23 * $h 20 * $h 0 0;
+        }
+    }
+}
