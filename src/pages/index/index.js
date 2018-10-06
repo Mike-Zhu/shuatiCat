@@ -3,7 +3,7 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import * as echarts from '../../components/ec-canvas/echarts';
+// import * as echarts from '../../components/ec-canvas/echarts';
 
 import './index.scss'
 

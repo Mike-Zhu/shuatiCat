@@ -5,6 +5,7 @@ import { Provider } from '@tarojs/redux'
 import Index from './pages/index'
 import Test from './pages/test'
 import College from './pages/college'
+import SelectType from './pages/selectType'
 
 import configStore from './store'
 
@@ -19,6 +20,7 @@ class App extends Component {
       'pages/index/index',
       'pages/test/index',
       'pages/college/index',
+      'pages/selectType/index'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -28,20 +30,13 @@ class App extends Component {
     }
   }
 
-  componentDidMount() { }
-
-  componentDidShow() { }
-
-  componentDidHide() { }
-
-  componentCatchError() { }
-
   render() {
     return (
       <Provider store={store}>
         <Index />
         <Test />
         <College />
+        <SelectType />
       </Provider>
     )
   }
