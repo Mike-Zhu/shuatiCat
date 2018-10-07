@@ -26,11 +26,14 @@ export default class SelectType extends Component {
     config = {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#FF6961",
-        "navigationBarTitleText": this.$router.params.type,
+        "navigationBarTitleText": 'Default',
         "navigationBarTextStyle": "#fff",
     }
     async componentDidMount() {
         let { type } = this.$router.params
+        Taro.setNavigationBarTitle({
+            title:type
+        })
         let { api: { getTitleByProvince } } = this
         let paperList = await http.get(getTitleByProvince, {
             province: type,

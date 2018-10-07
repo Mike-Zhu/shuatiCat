@@ -23,13 +23,15 @@ export default class SelectType extends Component {
     config = {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#FF6961",
-        "navigationBarTitleText": this.$router.params.secondType,
+        "navigationBarTitleText": 'Default',
         "navigationBarTextStyle": "#fff",
     }
     async componentDidMount() {
         let { secondType } = this.$router.params
         let { select: { secondType: typelist } } = this.props
-
+        Taro.setNavigationBarTitle({
+            title:secondType
+        })
         for (let i = 0; i < typelist.length; i++) {
             let { content } = typelist[i]
             content.forEach(element => {
