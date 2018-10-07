@@ -17,7 +17,7 @@ export function post(api, data) {
         method: 'POST',
         header
     })
-        .then(res => console.log(res.data))
+        // .then(res => console.log(res.data))
 }
 
 export function get(api, data) {
@@ -32,7 +32,7 @@ export function get(api, data) {
         method: 'GET',
         header
     })
-        .then(res => console.log(res.data) || res.data)
+        .then(res =>  res.data)
 }
 
 export default {

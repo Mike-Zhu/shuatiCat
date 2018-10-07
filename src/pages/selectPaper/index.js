@@ -21,6 +21,7 @@ export default class SelectType extends Component {
     }
 
     api = {
+        getPaper: "api/getPaper",
         getTitleByProvince: "api/getTitleByProvince"
     }
     config = {
@@ -32,7 +33,7 @@ export default class SelectType extends Component {
     async componentDidMount() {
         let { type } = this.$router.params
         Taro.setNavigationBarTitle({
-            title:type
+            title: type
         })
         let { api: { getTitleByProvince } } = this
         let paperList = await http.get(getTitleByProvince, {
@@ -44,10 +45,16 @@ export default class SelectType extends Component {
             payload: paperList.data
         })
     }
-    routeGo() {
+    async download(e) {
         let dataset = e.target.dataset || {}
-        console.log(dataset)
-        // let value = dataset.value || {}
+        let paperId = dataset.id
+        let { api: { getPaper } } = this
+        let paper = await http.get(getPaper, {
+            user_id,
+            paperId
+        })
+        Taro.setStorage({ key: 'paperId', data: paperId })
+        Taro.setStorage({ key: 'questionBank', data: JSON.stringify(paper.data) })
         // Taro.navigateTo({
         //     url: `/pages/selectType/index?type=${value}`
         // })
@@ -59,7 +66,7 @@ export default class SelectType extends Component {
                 {paperList.map(content => (
                     <View class="content" key={content.id}>
                         <Text>{content.title}</Text>
-                        <Button onClick={this.routeGo} data-id={content.id}>SELECT</Button>
+                        <Button onClick={this.download} data-id={content.id}>SELECT</Button>
                     </View>
                 ))}
             </View>
