@@ -1,18 +1,21 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-
-import { add, minus, asyncAdd } from '../../actions/counter'
+import './index.scss'
 // import * as echarts from '../../components/ec-canvas/echarts';
 
-import './index.scss'
 
 
 const initChart = (canvas, width, height) => {
   console.log(canvas, width, height)
 }
 
-class Index extends Component {
+@connect(({ counter }) => ({
+  counter
+}), (dispatch) => ({
+
+}))
+export default class Index extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -20,6 +23,26 @@ class Index extends Component {
         onInit: initChart
       }
     }
+  }
+
+  componentDidMount() {
+    let questionBank = Taro.getStorageSync('questionBank')
+    let questionInfo = Taro.getStorageSync('questionInfo')
+    let paperId = Taro.getStorageSync('paperId')
+    if (!paperId) {
+      console.log('没有存储当前题库')
+      return
+    }
+    let bank = questionBank
+      ? JSON.parse(questionBank)
+      : {}
+    let info = questionInfo
+      ? JSON.parse(questionInfo)
+      : {}
+    this.bank = bank
+    this.info = info[paperId] || {}
+    console.log(bank)
+    console.log(info)
   }
 
   config = {
@@ -40,11 +63,15 @@ class Index extends Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps)
+  whritNewQuestion() {
+    Taro.navigateTo({
+      url: `/pages/detail/index`
+    })
   }
 
-  componentWillUnmount() { }
+  whritWrongQuestion() {
+
+  }
 
   componentDidShow() { }
 
@@ -57,24 +84,16 @@ class Index extends Component {
           <Text className="title">2016 海南高考</Text>
           <Button onClick={this.routeGo} data-value="college">SELECT</Button>
         </View>
+        <View>
+          <Button onClick={this.whritNewQuestion}>刷新题</Button>
+        </View>
+        <View>
+          <Button>刷错题</Button>
+        </View>
         {/* <View>
           <ec-canvas id='mychart-dom-area' canvas-id='mychart-area' ec={this.state.ec}></ec-canvas>
         </View> */}
       </View>
     )
   }
-}
-
-export default connect(({ counter }) => ({
-  counter
-}), (dispatch) => ({
-  add() {
-    dispatch(add())
-  },
-  dec() {
-    dispatch(minus())
-  },
-  asyncAdd() {
-    dispatch(asyncAdd())
-  }
-}))(Index)
+} 

@@ -22,7 +22,8 @@ export default class SelectType extends Component {
 
     api = {
         getPaper: "api/getPaper",
-        getTitleByProvince: "api/getTitleByProvince"
+        getTitleByProvince: "api/getTitleByProvince",
+        getQuestionInfoByPaperid: "api/getQuestionInfoByPaperid"
     }
     config = {
         "backgroundTextStyle": "light",
@@ -48,13 +49,18 @@ export default class SelectType extends Component {
     async download(e) {
         let dataset = e.target.dataset || {}
         let paperId = dataset.id
-        let { api: { getPaper } } = this
+        let { api: { getPaper, getQuestionInfoByPaperid } } = this
         let paper = await http.get(getPaper, {
             user_id,
             paperId
         })
-        Taro.setStorage({ key: 'paperId', data: paperId })
-        Taro.setStorage({ key: 'questionBank', data: JSON.stringify(paper.data) })
+        let questionInfo = await http.get(getQuestionInfoByPaperid, {
+            user_id,
+            paper_id: paperId
+        })
+        Taro.setStorageSync('paperId', paperId)
+        Taro.setStorageSync('questionBank', JSON.stringify(paper.data))
+        Taro.setStorageSync('questionInfo', JSON.stringify(questionInfo.data))
         // Taro.navigateTo({
         //     url: `/pages/selectType/index?type=${value}`
         // })

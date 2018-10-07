@@ -1,0 +1,70 @@
+$h:2px;
+$bg:#FF6961;
+
+.detail{
+    font-size: 14 * $h;
+    line-height: 18 * $h;
+    background-color: #fafafa;
+    border-top: 1rpx solid transparent;
+    .question{
+        margin-top:8 * $h; 
+        height: 186 * $h;
+        padding:  8*$h 24*$h; 
+        overflow: auto;
+        background-color: #fff;
+    }
+    .tags{
+        line-height: 56 * $h;
+        font-size: 16 * $h;
+        padding: 0 24*$h; 
+        display: block;
+    }
+    .options{
+        padding: 13*$h 0;
+        background-color: #fff;
+        .option{
+            padding: 12 * $h 24*$h;
+            font-size: 14 *$h;
+            position: relative;
+            .tag{
+                position: absolute;
+                background-color: #ccc;
+                display: inline-block;
+                color: #fff;
+                width: 24 * $h;
+                height: 24 * $h;
+                line-height: 24 * $h;
+                text-align: center;
+                border-radius: 2 * $h;
+            }
+            .value{
+                line-height: 24 * $h;
+                display: inline-block;
+                margin-left: 40 * $h;
+            }
+            &.success{
+                background-color: rgba(4,190,91, .15) ;
+                .tag{
+                    background-color: #04BE5B;
+                }
+                .value{
+                    color:#04BE5B;
+                }
+            }
+            &.error{
+                background-color: rgba(210,51,92, .15) ;
+                .tag{
+                    background-color: rgb(192,50,87);
+                }
+                .value{
+                    color:rgb(192,50,87);
+                } 
+            }
+        }
+    }
+    .analysis{
+        padding: 8 * $h 24 *$h;
+        display: inline-block;
+        background-color: #fff;
+    }
+}
