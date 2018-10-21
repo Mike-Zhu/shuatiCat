@@ -26,12 +26,17 @@ export default class Index extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     let questionBank = Taro.getStorageSync('questionBank')
     let questionInfo = Taro.getStorageSync('questionInfo')
     let paperId = Taro.getStorageSync('paperId')
     let paperName = Taro.getStorageSync('paperName', paperName)
-
+    let clientInfo = await Taro.getSystemInfo()
+    let { dispatch } = this.props
+    dispatch({
+      type: "setClientInfo",
+      payload: clientInfo
+    })
     if (!paperId) {
       console.log('没有存储当前题库')
       return

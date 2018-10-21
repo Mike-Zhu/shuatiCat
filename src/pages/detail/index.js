@@ -5,14 +5,14 @@ import './index.scss'
 import gourpPng from '../../icons/group.png'
 import icSend from '../../icons/ic_send.png'
 import buttonPng from '../../icons/button.png'
+import * as OptionController from '../../service/detailController'
 
-@connect(({ detail }) => {
+@connect(({ detail, current }) => {
     return {
-        detail
+        detail,
+        clientInfo: current.clientInfo //client信息
     }
-}, (dispatch) => ({
-
-}))
+})
 
 export default class Detail extends Component {
     constructor(props) {
@@ -115,14 +115,15 @@ export default class Detail extends Component {
     render() {
         let { detail, options, isCompleted, answer, answerList, isPending } = this.props.detail
         let { analysis } = detail
-        let domList = getQuestionRender(detail.question)
+        let domList = getQuestionRender(detail.question, this.props.clientInfo)
+        console.log(domList)
         return (
             <View className="detail">
                 <View className="question">
                     {domList.map(res => {
-                        switch(res.type){
+                        switch (res.type) {
                             case "Text":
-                                return  <Text>{res.value}</Text> 
+                                return <Text key={res.key}>{res.value}</Text>
                         }
                     })}
                 </View>
@@ -237,11 +238,89 @@ export default class Detail extends Component {
 }
 
 
-function getQuestionRender (str) {
-    let vdomList = []
-    vdomList.push({
-        type:"Text",
-        value:str
+function getQuestionRender(content, clientInfo) {
+    let regex = /<img/g
+    if (!content) return getOnlyText('')
+    let splitList = content.split(regex)
+    let hasNoImage = splitList.length === 1 && content.indexOf('img') < 0
+    if (hasNoImage) return getOnlyText(content)
+    return getImageAndText(splitList, clientInfo)
+}
+
+function getOnlyText(content) {
+    return [{
+        type: "Text",
+        value: content,
+        key: content.slice(0, 3)
+    }]
+}
+
+function getImageAndText(splitList, clientInfo) {
+    //文字与图嵌套
+    let optionArray = [],
+        count = 0;
+    splitList.forEach((result, index) => {
+        if (result.indexOf('/>') >= 0) {
+            let imgArr = result.split('/>')
+            if (!!imgArr[1]) {
+                optionArray[index] = imgArr
+            } else {
+                splitList[index] = imgArr[0]
+            }
+        }
+    })
+    optionArray.forEach((result, index) => {
+        splitList.splice(index, 1 + count, ...result)
+        count++
+    })
+    let vdomList = splitList.map((content, index) => {
+        let isGifImage = content.search(/.\/(.*)gif/g) >= 0
+        let isCommonImage = content.search(/.\/(.*)png/g) >= 0 || content.search(/.\/(.*)jpg/g) >= 0
+        if (isGifImage) return getGifUrl(content)
+        if (isCommonImage) return getImageUrl(content, clientInfo)
+        return { type: "Text", value: content, key: content }
     })
     return vdomList
+}
+
+function getImageUrl(content, clientInfo) {
+    let url = OptionController._handleImageURL(content)
+    let styleObj = OptionController.getStyle(content)
+    let attrObj = OptionController.getAttr(content)
+    let expr = /\/(.*)_(.*)x(.*)_/;
+    let size = url.match(expr)
+    let scale = 0.9
+    let width = clientInfo.screenWidth - 40
+    let height = 200
+    let isSizeArray = Array.isArray(size) && size.length > 0
+    if (isSizeArray) {
+        let styleFromCulti = OptionController.setStyle(attrObj, styleObj, size, scale, clientInfo)
+        let newSize = OptionController.setStyleForAnalysis(styleFromCulti, clientInfo)
+        width = newSize.width
+        height = newSize.height
+    }
+    //当图片宽度小于屏幕的0.7倍，不可点击放大
+    let shouldBeMaxed = width < (clientInfo.screenWidth * 0.7) ? true : false
+
+    return {
+        key: url,
+        type: "Image",
+        url,
+        style: {
+            width,
+            height,
+            shouldBeMaxed
+        }
+    }
+}
+
+function getGifUrl(content) {
+    var re2 = /\".*?\"/gm;
+    let urlArray = re2.exec(content)
+    let url = urlArray[0].replace(/\"/g, "")
+    return {
+        type: "gif",
+        url,
+        key: url
+    }
 }

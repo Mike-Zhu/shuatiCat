@@ -24,6 +24,11 @@ export default function current(state = INITIAL_STATE, action) {
                 ...state,
                 index: action.payload
             }
+        case 'setClientInfo':
+            return {
+                state,
+                clientInfo: action.payload
+            }
         default:
             return state
     }
