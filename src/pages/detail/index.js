@@ -1,7 +1,10 @@
 import Taro, { Component } from '@tarojs/taro'
-import { View, Button, Text ,RichText} from '@tarojs/components'
+import { View, Button, Text, RichText, Image } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
+import gourpPng from '../../icons/group.png'
+import icSend from '../../icons/ic_send.png'
+import buttonPng from '../../icons/button.png'
 
 @connect(({ detail }) => ({
     detail
@@ -27,15 +30,67 @@ export default class Detail extends Component {
     choice(e) {
         let dataset = e.target.dataset
         let value = dataset.value
-        console.log('vakue => ', dataset)
-        this.setState({
-            answer: value
+        let {
+            dispatch,
+            isMulty,
+            detail: { detail: answer ,isCompleted}
+        } = this.props
+        if (isMulty) {
+            choiceMulty(value)
+            return
+        }
+        console.log(isCompleted)
+        if(isCompleted) return
+        dispatch({
+            type: 'setAnwser',
+            payload: value
+        })
+        dispatch({
+            type: 'setCompletd'
         })
     }
 
+    enterMulty() {
+        let { answerList } = this.detail.detail
+
+    }
+
+    choiceMulty(value) {
+        let { answerList } = this.detail.detail
+        answerList.push(value)
+        this.props.dispatch({
+            type: "setMultyAnwser",
+            payload: answerList
+        })
+
+    }
+
+    getOptionClassName(key) {
+        let {
+            isMulty,
+            detail: { answer: trueAnser },
+            answer,
+            answerList
+        } = this.props.detail
+        let name = "option"
+        if (!isMulty) {
+            if (answer) {
+                let isRight = answer === trueAnser
+                let answerName = isRight ? `${name} success` : `${name} error`
+                name = key === answer ? answerName : name
+            }
+            console.log('name => ', name)
+            console.log('key => ', key)
+            return name
+        }
+
+    }
+
+
     render() {
-        let { detail, options } = this.props.detail
+        let { detail, options, isCompleted, answer, answerList } = this.props.detail
         let { analysis } = detail
+        // console.log(isCompleted)
         return (
             <View className="detail">
                 <View className="question">
@@ -48,7 +103,7 @@ export default class Detail extends Component {
                 </Text>
                 <View className="options">
                     {options.map(option => (
-                        <View className={`option ${this.state.answer === option.key ? 'error' : ''}`}
+                        <View className={this.getOptionClassName(option.key)}
                             key={option.key}
                             onClick={this.choice}
                             data-value={option.key}
@@ -58,20 +113,38 @@ export default class Detail extends Component {
                         </View>
                     ))}
                 </View>
-                <Text className="tags">
-                    Answer Analysis
-                </Text>
-                <Text className="analysis">
-                    {analysis.replace(/<\/br>/g,'\n')}
-                </Text>
-                <Text className="tags">
+                {
+                    isCompleted &&
+                    <Text className="tags">
+                        Answer Analysis
+                    </Text>
+                }
+                {isCompleted && <Text className="analysis">
+                    {analysis && analysis.replace(/<\/br>/g, '\n')}
+                </Text>}
+                {isCompleted && <Text className="tags">
                     Content Incorrect
-                </Text>
+                </Text>}
+                {isCompleted && <View className="feedback">
+                    <Image src={gourpPng} className="group"></Image>
+                    <input placeholder="Send Feedback"></input>
+                    <Image src={icSend} className="icsend"></Image>
+                </View>}
+                {isCompleted &&
+                    <View onClick={this.refresh} className="next">
+                        <Image src={buttonPng} ></Image>
+                    </View>
+                }
             </View>
         )
     }
 
+    refresh() {
+        this.setDetail(parseInt(Math.random() * 50))
+    }
     setDetail(number) {
+        console.log('refresh')
+        console.log(number)
         let detail = this.getNewQuestion(number)
         Taro.setNavigationBarTitle({
             title: detail.category
@@ -85,11 +158,16 @@ export default class Detail extends Component {
                 value
             })
         })
+        let isMulty = detail.subject === '多选'
         this.props.dispatch({
             type: "initDetail",
             payload: {
                 detail,
-                options
+                options,
+                isMulty,
+                answer: undefined,
+                answerList: [],
+                isCompleted: false
             }
         })
         // console.log('detail => ', detail)
@@ -98,10 +176,10 @@ export default class Detail extends Component {
     getNewQuestion(number) {
         let beDone = Object.keys(this.info)
         let newQuesList = this.bank.filter(ques => {
-            let number = ques.question_number
-            return beDone.indexOf(number) < 0
+            let innerNumber = ques.question_number
+            return beDone.indexOf(innerNumber) < 0
         })
-        return newQuesList[0]
+        return number ? newQuesList[number] : newQuesList[0]
     }
 
     initData() {
