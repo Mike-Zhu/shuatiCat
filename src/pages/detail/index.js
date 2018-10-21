@@ -6,9 +6,11 @@ import gourpPng from '../../icons/group.png'
 import icSend from '../../icons/ic_send.png'
 import buttonPng from '../../icons/button.png'
 
-@connect(({ detail }) => ({
-    detail
-}), (dispatch) => ({
+@connect(({ detail }) => {
+    return {
+        detail
+    }
+}, (dispatch) => ({
 
 }))
 
@@ -24,7 +26,7 @@ export default class Detail extends Component {
             this.initData()
             this.paperId = Taro.getStorageSync('paperId')
         }
-        this.setDetail()
+        this.setDetail(24)
     }
 
     choice(e) {
@@ -32,78 +34,105 @@ export default class Detail extends Component {
         let value = dataset.value
         let {
             dispatch,
-            isMulty,
-            detail: { detail: answer ,isCompleted}
+            detail: { detail: answer, isCompleted, isMulty, answerList }
         } = this.props
+        if (isCompleted) return
         if (isMulty) {
-            choiceMulty(value)
-            return
+            let answerIndex = answerList.indexOf(value)
+            if (answerIndex >= 0) {
+                answerList.splice(answerIndex, 1)
+            } else {
+                answerList.push(value)
+            }
+            let newArray = [].concat(answerList)
+            dispatch({
+                type: "setMultyAnwser",
+                payload: newArray
+            })
+            dispatch({
+                type: 'setPending',
+                payload: true
+            })
         }
-        console.log(isCompleted)
-        if(isCompleted) return
-        dispatch({
-            type: 'setAnwser',
-            payload: value
-        })
-        dispatch({
-            type: 'setCompletd'
-        })
+
+        if (!isMulty) {
+            dispatch({
+                type: 'setAnwser',
+                payload: value
+            })
+            dispatch({
+                type: 'setCompletd'
+            })
+        }
     }
 
     enterMulty() {
-        let { answerList } = this.detail.detail
-
-    }
-
-    choiceMulty(value) {
-        let { answerList } = this.detail.detail
-        answerList.push(value)
-        this.props.dispatch({
-            type: "setMultyAnwser",
-            payload: answerList
+        let { dispatch, detail } = this.props
+        let isRight = this.isMultyAnswerRight()
+        dispatch({
+            type: 'setCompletd'
         })
-
+        dispatch({
+            type: 'setPending',
+            payload: false
+        })
     }
 
-    getOptionClassName(key) {
+    isMultyAnswerRight() {
+        let { answerList, detail: { answer: trueAnswer } } = this.props.detail
+        let trueAnswerSrting = trueAnswer.split().sort().join()
+        let answer = answerList.sort().join()
+        return trueAnswerSrting === answer
+    }
+    getOptionClassName(key, answerList) {
         let {
             isMulty,
-            detail: { answer: trueAnser },
+            detail: { answer: trueAnswer },
             answer,
-            answerList
+            isCompleted
         } = this.props.detail
         let name = "option"
-        if (!isMulty) {
-            if (answer) {
-                let isRight = answer === trueAnser
-                let answerName = isRight ? `${name} success` : `${name} error`
-                name = key === answer ? answerName : name
-            }
-            console.log('name => ', name)
-            console.log('key => ', key)
-            return name
-        }
 
+        if (!isMulty) {
+            let noAnswer = !answer
+            let isRight = answer === trueAnswer
+            let isChoiced = key === answer
+            let answerName = isRight ? `${name} success` : `${name} error`
+            if (!isChoiced || noAnswer) return name
+            return answerName
+        }
+        if (isMulty) {
+            let isChoiced = answerList.indexOf(key) >= 0
+            let isRight = this.isMultyAnswerRight()
+            let answerName = isRight ? `${name} success` : `${name} error`
+            let pendingName = `${name} pending`
+            if (!isChoiced) return name
+            if (isChoiced && !isCompleted) return pendingName
+            if (isChoiced && isCompleted) return answerName
+        }
     }
 
-
     render() {
-        let { detail, options, isCompleted, answer, answerList } = this.props.detail
+        let { detail, options, isCompleted, answer, answerList, isPending } = this.props.detail
         let { analysis } = detail
-        // console.log(isCompleted)
+        let domList = getQuestionRender(detail.question)
         return (
             <View className="detail">
                 <View className="question">
-                    {detail.question}
-                    {detail.question}
-                    {detail.question}
+                    {domList.map(res => {
+                        switch(res.type){
+                            case "Text":
+                                return  <Text>{res.value}</Text> 
+                        }
+                    })}
                 </View>
-                <Text className="tags">
+                <View className="tags">
                     Options
-                </Text>
+                    {isPending && answerList.length > 0 && <Button onClick={this.enterMulty}>确定</Button>}
+                </View>
                 <View className="options">
                     {options.map(option => (
-                        <View className={this.getOptionClassName(option.key)}
+                        <View className={this.getOptionClassName(option.key, answerList)}
                             key={option.key}
                             onClick={this.choice}
                             data-value={option.key}
@@ -143,8 +172,7 @@ export default class Detail extends Component {
         this.setDetail(parseInt(Math.random() * 50))
     }
     setDetail(number) {
-        console.log('refresh')
-        console.log(number)
+        console.log('题号为 ： ', number)
         let detail = this.getNewQuestion(number)
         Taro.setNavigationBarTitle({
             title: detail.category
@@ -206,4 +234,14 @@ export default class Detail extends Component {
         "navigationBarTitleText": "标题",
         "navigationBarTextStyle": "#fff",
     }
+}
+
+
+function getQuestionRender (str) {
+    let vdomList = []
+    vdomList.push({
+        type:"Text",
+        value:str
+    })
+    return vdomList
 }

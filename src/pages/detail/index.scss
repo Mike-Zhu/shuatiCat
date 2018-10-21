@@ -62,6 +62,15 @@ page{
                     color:rgb(192,50,87);
                 } 
             }
+            &.pending{
+                background-color: rgba(0,130,213, .15) ;
+                .tag{
+                    background-color: #0082D5;
+                }
+                .value{
+                    color:#0082D5;
+                } 
+            }
         }
     }
     .analysis{

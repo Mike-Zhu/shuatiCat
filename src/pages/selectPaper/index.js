@@ -48,7 +48,8 @@ export default class SelectType extends Component {
     }
     async download(e) {
         let dataset = e.target.dataset || {}
-        let paperId = dataset.id
+        let paperId = dataset.id,
+            paperName = dataset.name
         let { api: { getPaper, getQuestionInfoByPaperid } } = this
         let paper = await http.get(getPaper, {
             user_id,
@@ -59,6 +60,7 @@ export default class SelectType extends Component {
             paper_id: paperId
         })
         Taro.setStorageSync('paperId', paperId)
+        Taro.setStorageSync('paperName', paperName)
         Taro.setStorageSync('questionBank', JSON.stringify(paper.data))
         Taro.setStorageSync('questionInfo', JSON.stringify(questionInfo.data))
         // Taro.navigateTo({
@@ -72,7 +74,11 @@ export default class SelectType extends Component {
                 {paperList.map(content => (
                     <View class="content" key={content.id}>
                         <Text>{content.title}</Text>
-                        <Button onClick={this.download} data-id={content.id}>SELECT</Button>
+                        <Button 
+                            onClick={this.download}
+                            data-id={content.id} 
+                            data-name ={content.title}
+                        >SELECT</Button>
                     </View>
                 ))}
             </View>

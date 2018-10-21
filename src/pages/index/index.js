@@ -19,6 +19,7 @@ export default class Index extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      paperName: "default",
       ec: {
         onInit: initChart
       }
@@ -29,6 +30,8 @@ export default class Index extends Component {
     let questionBank = Taro.getStorageSync('questionBank')
     let questionInfo = Taro.getStorageSync('questionInfo')
     let paperId = Taro.getStorageSync('paperId')
+    let paperName = Taro.getStorageSync('paperName', paperName)
+
     if (!paperId) {
       console.log('没有存储当前题库')
       return
@@ -41,8 +44,9 @@ export default class Index extends Component {
       : {}
     this.bank = bank
     this.info = info[paperId] || {}
-    console.log(bank)
-    console.log(info)
+    this.setState({
+      paperName
+    })
   }
 
   config = {
@@ -81,15 +85,15 @@ export default class Index extends Component {
     return (
       <View className='main'>
         <View className="select-paper">
-          <Text className="title">2016 海南高考</Text>
+          <Text className="title">{this.state.paperName}</Text>
           <Button onClick={this.routeGo} data-value="college">SELECT</Button>
         </View>
         <View>
           <Button onClick={this.whritNewQuestion}>刷新题</Button>
         </View>
-        <View>
+        {/* <View>
           <Button>刷错题</Button>
-        </View>
+        </View> */}
         {/* <View>
           <ec-canvas id='mychart-dom-area' canvas-id='mychart-area' ec={this.state.ec}></ec-canvas>
         </View> */}
