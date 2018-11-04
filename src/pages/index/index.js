@@ -1,48 +1,42 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import http, { user_id } from '../../service/http'
 import './index.scss'
 import * as echarts from '../../components/ec-canvas/echarts';
 import { newPaper, rememberPaper } from '../../service/echartOption';
+import {
+  getWeekdayList,
+  getNewQuestionInfo,
+  getOldQuestionInfo
+} from "../..//service/chartData"
+import { getJSON } from "../../service/utils"
 
 let chartCache = {} //存储chart
-let callbackCache = {
-  'ec1': ec1Deal,
-  'ec2': ec2Deal,
+
+function getQuesOption(key, info) {
+  let weekday = getWeekdayList()
+  let isNewQuestion = key === "newQuestion"
+  let newInfo = isNewQuestion ? getNewQuestionInfo(info) : getOldQuestionInfo(info)
+  let option = isNewQuestion ? newPaper.option : rememberPaper.option
+
+  option.series[0]["data"] = newInfo
+  option.xAxis[0]["data"] = weekday
+  return option
 }
 
-function ec1Deal({ chartInfo, weekday }) {
-  newPaper.option.series[0].data = chartInfo.beforeArray.map((value) => {
-    return value.length
-  })
-  newPaper.option.xAxis[0].data = weekday
-  return newPaper.option
-}
-
-function ec2Deal({ chartInfo, weekday }) {
-  rememberPaper.option.series[0].data = chartInfo.futureArray
-  rememberPaper.option.xAxis[0].data = weekday
-  return rememberPaper.option
-}
-
-function initChartModel(callback, key) {
+function initChartModel(key, that) {
   return function initChart(canvas, width, height) {
-    let option = callback(getQuesObj())
+    let { info } = that
+    let option = getQuesOption(key, info)
     const chart = echarts.init(canvas, null, {
-      width: width,
-      height: height
+      width,
+      height
     });
     canvas.setChart(chart);
     chart.setOption(option);
     chartCache[key] = chart
     return chart;
-  }
-}
-
-function getQuesObj() {
-  return {
-    chartInfo: questionMananger.getChartInfo(),
-    weekday: questionMananger.getChartBeforeWeekday()
   }
 }
 
@@ -57,37 +51,47 @@ export default class Index extends Component {
     this.state = {
       paperName: "default",
       ec: {
-        onInit: initChartModel(callbackCache['ec1'], 'ec1')
+        onInit: initChartModel('newQuestion', this)
       }
     }
+  }
+  api = {
+    getQuestionInfoByPaperid: "api/getQuestionInfoByPaperid"
+  }
+  renderChart() {
+    let chartArr = Object.keys(chartCache)
+    chartArr.forEach(key => {
+      let chart = chartCache[key]
+      let option = getQuesOption(key, this.info)
+      console.log(option)
+      chart.setOption(option)
+    })
   }
 
   async componentDidMount() {
     let questionBank = Taro.getStorageSync('questionBank')
-    let questionInfo = Taro.getStorageSync('questionInfo')
+    // let questionInfo = Taro.getStorageSync('questionInfo')
+    // let info = getJSON(questionInfo)
     let paperId = Taro.getStorageSync('paperId')
     let paperName = Taro.getStorageSync('paperName', paperName)
     let clientInfo = await Taro.getSystemInfo()
     let { dispatch } = this.props
+    let { api: { getQuestionInfoByPaperid } } = this
+
     dispatch({
       type: "setClientInfo",
       payload: clientInfo
     })
-    if (!paperId) {
-      console.log('没有存储当前题库')
-      return
-    }
-    let bank = questionBank
-      ? JSON.parse(questionBank)
-      : {}
-    let info = questionInfo
-      ? JSON.parse(questionInfo)
-      : {}
-    this.bank = bank
-    this.info = info[paperId] || {}
-    this.setState({
-      paperName
+
+    if (!paperId) { throw new Error('没有存储当前题库') }
+    this.bank = getJSON(questionBank)
+    this.setState({ paperName })
+    let info = await http.get(getQuestionInfoByPaperid, {
+      user_id,
+      paper_id: paperId
     })
+    this.info = info[paperId]
+    this.renderChart()
   }
 
   config = {
@@ -135,7 +139,7 @@ export default class Index extends Component {
         {/* <View>
           <Button>刷错题</Button>
         </View> */}
-        <View>
+        <View className="echart-line-view">
           <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.ec}></ec-canvas>
         </View>
       </View>

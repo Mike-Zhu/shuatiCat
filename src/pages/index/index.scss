@@ -24,5 +24,9 @@ $bg:#FF6961;
             color: #fff;
         }
     }
-    
+    .echart-line-view {
+        height: 204 * $idx;
+        width: 100%;
+        z-index: 999;
+    }
 }
