@@ -3,12 +3,47 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
 import * as echarts from '../../components/ec-canvas/echarts';
-import { newPaper, pieOption, rememberPaper } from '../../service/detailController';
+import { newPaper, rememberPaper } from '../../service/echartOption';
 
+let chartCache = {} //存储chart
+let callbackCache = {
+  'ec1': ec1Deal,
+  'ec2': ec2Deal,
+}
 
+function ec1Deal({ chartInfo, weekday }) {
+  newPaper.option.series[0].data = chartInfo.beforeArray.map((value) => {
+    return value.length
+  })
+  newPaper.option.xAxis[0].data = weekday
+  return newPaper.option
+}
 
-const initChart = (canvas, width, height) => {
-  console.log(canvas, width, height)
+function ec2Deal({ chartInfo, weekday }) {
+  rememberPaper.option.series[0].data = chartInfo.futureArray
+  rememberPaper.option.xAxis[0].data = weekday
+  return rememberPaper.option
+}
+
+function initChartModel(callback, key) {
+  return function initChart(canvas, width, height) {
+    let option = callback(getQuesObj())
+    const chart = echarts.init(canvas, null, {
+      width: width,
+      height: height
+    });
+    canvas.setChart(chart);
+    chart.setOption(option);
+    chartCache[key] = chart
+    return chart;
+  }
+}
+
+function getQuesObj() {
+  return {
+    chartInfo: questionMananger.getChartInfo(),
+    weekday: questionMananger.getChartBeforeWeekday()
+  }
 }
 
 @connect(({ counter }) => ({
@@ -22,7 +57,7 @@ export default class Index extends Component {
     this.state = {
       paperName: "default",
       ec: {
-        onInit: initChart
+        onInit: initChartModel(callbackCache['ec1'], 'ec1')
       }
     }
   }
@@ -100,9 +135,9 @@ export default class Index extends Component {
         {/* <View>
           <Button>刷错题</Button>
         </View> */}
-        {/* <View>
-          <ec-canvas id='mychart-dom-area' canvas-id='mychart-area' ec={this.state.ec}></ec-canvas>
-        </View> */}
+        <View>
+          <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.ec}></ec-canvas>
+        </View>
       </View>
     )
   }
