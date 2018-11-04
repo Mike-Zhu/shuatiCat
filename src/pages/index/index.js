@@ -2,7 +2,8 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 import './index.scss'
-// import * as echarts from '../../components/ec-canvas/echarts';
+import * as echarts from '../../components/ec-canvas/echarts';
+import { newPaper, pieOption, rememberPaper } from '../../service/detailController';
 
 
 

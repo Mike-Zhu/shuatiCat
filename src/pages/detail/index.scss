@@ -7,6 +7,11 @@ page{
 .detail{
     font-size: 14 * $h;
     line-height: 18 * $h;
+    .material{
+        margin-top:8 * $h; 
+        padding:  8*$h 24*$h; 
+        background-color: #fff;
+    }
     .question{
         margin-top:8 * $h; 
         height: 186 * $h;

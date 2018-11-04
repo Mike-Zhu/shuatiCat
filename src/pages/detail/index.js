@@ -7,6 +7,7 @@ import icSend from '../../icons/ic_send.png'
 import buttonPng from '../../icons/button.png'
 import * as OptionController from '../../service/detailController'
 
+
 @connect(({ detail, current }) => {
     return {
         detail,
@@ -26,7 +27,7 @@ export default class Detail extends Component {
             this.initData()
             this.paperId = Taro.getStorageSync('paperId')
         }
-        this.setDetail(24)
+        this.setDetail(13)
     }
 
     choice(e) {
@@ -114,17 +115,42 @@ export default class Detail extends Component {
 
     render() {
         let { detail, options, isCompleted, answer, answerList, isPending } = this.props.detail
-        let { analysis } = detail
+        let { analysis, question_material } = detail
         let domList = getQuestionRender(detail.question, this.props.clientInfo)
-        console.log(domList)
+        options.forEach(result => {
+            result.domList = getQuestionRender(result.value, this.props.clientInfo)
+        })
+        analysis = analysis && analysis.replace(/<\/br>/g, '\/n')
+        let analysisDomList = getQuestionRender(analysis, this.props.clientInfo)
+        let materialList = question_material ? getQuestionRender(question_material, this.props.clientInfo) : []
+        
         return (
             <View className="detail">
+                {question_material &&
+                    <View className="tags">
+                        Material
+                    </View>
+                }
+                {
+                    question_material &&
+                    <View className="material">
+                        {materialList.map(res => {
+                            return res.type === "Text"
+                                ? <Text key={res.key}>{res.value}</Text>
+                                : res.type === "Image" ? <Image style={res.style} key={res.key} src={res.url} />
+                                    : <Image key={res.key} src={res.url} />
+                        })}
+                    </View>
+                }
+                <View className="tags">
+                    Question
+                </View>
                 <View className="question">
                     {domList.map(res => {
-                        switch (res.type) {
-                            case "Text":
-                                return <Text key={res.key}>{res.value}</Text>
-                        }
+                        return res.type === "Text"
+                            ? <Text key={res.key}>{res.value}</Text>
+                            : res.type === "Image" ? <Image style={res.style} key={res.key} src={res.url} />
+                                : <Image key={res.key} src={res.url} />
                     })}
                 </View>
                 <View className="tags">
@@ -139,7 +165,15 @@ export default class Detail extends Component {
                             data-value={option.key}
                         >
                             <Text className="tag" data-value={option.key}>{option.key}</Text>
-                            <Text className="value" data-value={option.key}>{option.value}</Text>
+                            <View className="value" data-value={option.key}>
+                                {
+                                    option.domList.map(res => {
+                                        return res.type === "Text"
+                                            ? <Text key={res.key} data-value={option.key}>{res.value}</Text>
+                                            : <Image style={res.style} key={res.key} data-value={option.key} src={res.url} />
+                                    })
+                                }
+                            </View>
                         </View>
                     ))}
                 </View>
@@ -149,9 +183,16 @@ export default class Detail extends Component {
                         Answer Analysis
                     </Text>
                 }
-                {isCompleted && <Text className="analysis">
-                    {analysis && analysis.replace(/<\/br>/g, '\n')}
-                </Text>}
+                {isCompleted && <View className="analysis">
+                    {
+                        analysisDomList.map(res => {
+                            return res.type === "Text"
+                                ? <RichText key={res.key}>{res.value}</RichText>
+                                : res.type === "Image" ? <Image style={res.style} key={res.key} src={res.url} />
+                                    : <Image key={res.key} src={res.url} />
+                        })
+                    }
+                </View>}
                 {isCompleted && <Text className="tags">
                     Content Incorrect
                 </Text>}
@@ -306,10 +347,10 @@ function getImageUrl(content, clientInfo) {
         key: url,
         type: "Image",
         url,
+        shouldBeMaxed,
         style: {
-            width,
-            height,
-            shouldBeMaxed
+            width: `${width}px`,
+            height: `${height}px`,
         }
     }
 }
