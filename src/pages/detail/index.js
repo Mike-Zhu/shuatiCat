@@ -80,7 +80,7 @@ export default class Detail extends Component {
         this.updateInfo(isCorrect, finalAnswer, finalDetail)
         let params = this.getParams(isCorrect, finalAnswer)
         // console.log("finalAnswer", params)
-        // post(getUpdateInfoCache, params)
+        post(getUpdateInfoCache, params)
     }
     updateInfo(isCorrect, finalAnswer, finalDetail) {
         let { id, question_number } = finalDetail
@@ -117,40 +117,35 @@ export default class Detail extends Component {
             weighted,
             wrong
         }
-        this.info[question_number] = cache
-        Taro.setStorageSync('questionInfo',JSON.stringify(this.info))
+        info[question_number] = cache
+        Taro.setStorageSync('questionInfo', JSON.stringify(info))
     }
 
-    getParams(isCorrect, finalAnswer) {
-        let paperId = Taro.getStorageSync('paperId')
+    getParams(isCorrect) {
         let { detail: { detail: finalDetail } } = this.props
         let { id, question_number } = finalDetail
         let info = this.info
-        let cache = info[question_number] || {}
-        let timeScamp = new Date().getTime()
-        let lastDateTime = timeScamp
-        let firstDateTime = cache.firstBySelectedTime || timeScamp
-        let record = getJSON(cache["record"], [])
-        let appearTime = record.length
-        let weighted = cache["weighted"] || 0
-        let newRecord = {
-            time: timeScamp,
-            isRight: isCorrect,
-            select: finalAnswer
-        }
-        let score = Math.max(1, 7 - appearTime)
+        let cache = info[question_number]
 
-        record.push(newRecord)
-        weighted = isCorrect ? weighted + score : isCorrect
+        let {
+            lastDateTime,
+            firstDateTime,
+            record,
+            paper_id
+        } = cache
+        let appearTime = Math.max(getJSON(record, []).length - 1, 0)
+        let score = Math.max(1, 7 - appearTime)
 
         let params = {
             user_id,
-            paper_id: paperId,
+            paper_id,
             question_id: id,
+            record: record,
             question_number,
-            weighted,
+            correct: isCorrect ? 1 : 0,
+            wrong: isCorrect ? 0 : 1,
+            weighted: isCorrect ? score : 0,
             lastDateTime,
-            record: JSON.stringify(record),
             firstDateTime
         }
         return params
@@ -303,11 +298,18 @@ export default class Detail extends Component {
     }
 
     refresh() {
-        this.setDetail(parseInt(Math.random() * 50))
+        this.setDetail()
     }
     setDetail(number) {
-        console.log('题号为 ： ', number)
-        let detail = this.getNewQuestion(number)
+        // console.log('题号为 ： ', number)
+        let { detail: { isNewQuestion } } = this.props
+        let detail = isNewQuestion ? this.getNewQuestion(number) : this.getErrorQuestion(number)
+        //没有返回说明题已经刷完,回到主页
+        if (!detail) {
+            console.log("题已刷完!")
+            Taro.navigateBack()
+            return
+        }
         Taro.setNavigationBarTitle({
             title: detail.category
         })
@@ -335,13 +337,22 @@ export default class Detail extends Component {
         // console.log('detail => ', detail)
     }
 
-    getNewQuestion(number) {
-        let beDone = Object.keys(this.info)
-        let newQuesList = this.bank.filter(ques => {
-            let innerNumber = ques.question_number
-            return beDone.indexOf(innerNumber) < 0
+    getNewQuestion(number = 0) {
+        let info = this.info, bank = this.bank
+        let filterList = OptionController.getNewIndexList(info, bank)
+        let finalQuestionList = bank.filter(ques => {
+            return filterList.indexOf(ques.question_number) >= 0
         })
-        return number ? newQuesList[number] : newQuesList[0]
+        return finalQuestionList[number]
+    }
+
+    getErrorQuestion(number = 0) {
+        let info = this.info, bank = this.bank
+        let filterList = OptionController.getErrorIndexList(info)
+        let finalQuestionList = bank.filter(ques => {
+            return filterList.indexOf(ques.question_number) >= 0
+        })
+        return finalQuestionList[number]
     }
 
     initData() {

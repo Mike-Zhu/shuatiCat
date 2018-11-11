@@ -84,3 +84,21 @@ function changeEm(str) {
     }
     return str
 }
+
+export function getNewIndexList(info, bank = []) {
+    let notFilter = Object.keys(info).map(Number)
+    let numberList = bank.map(res => Number(res.question_number))
+    return numberList.filter(index => notFilter.indexOf(index) < 0)
+}
+
+export function getErrorIndexList(info) {
+    let oldQuestionList = Object.keys(info).map(Number)
+    let filterList = []
+    oldQuestionList.forEach(question_number => {
+        let detail = info[question_number]
+        let weighted = Number(detail.weighted) || 0
+        //做过的题并且权重小于7
+        if (weighted < 7) { filterList.push(question_number) }
+    })
+    return filterList
+}

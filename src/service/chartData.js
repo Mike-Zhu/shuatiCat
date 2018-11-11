@@ -57,12 +57,12 @@ function getScampList() {
     let minTime
     let scampList = []
     for (let i = 0; i < 6; i++) {
-        currentTime = currentTime - dayTimeScamp
         let timeObject = {
             max: currentTime,
             min: currentTime - dayTimeScamp
         }
         scampList.push(timeObject)
+        currentTime = currentTime - dayTimeScamp
     }
     minTime = currentTime
     scampList = scampList.reverse()
@@ -112,7 +112,7 @@ export function getTodayNumber(info) {
     //今天的刷题量
     let list = getNewQuestionInfo(info)
     let len = list.length
-    return list[len]
+    return list[len - 1]
 }
 
 export function getOldNumber(info) {

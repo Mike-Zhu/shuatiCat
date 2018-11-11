@@ -14,6 +14,7 @@ import {
   getOldNumber
 } from "../..//service/chartData"
 import { getJSON } from "../../service/utils"
+import * as OptionController from '../../service/detailController'
 
 let chartCache = {} //存储chart
 
@@ -85,13 +86,14 @@ export default class Index extends Component {
   }
 
   async componentDidMount() {
+    console.log('didmount')
     let questionBank = Taro.getStorageSync('questionBank')
     let paperId = Taro.getStorageSync('paperId')
     let paperName = Taro.getStorageSync('paperName')
     let clientInfo = await Taro.getSystemInfo()
     let { dispatch } = this.props
     let { api: { getQuestionInfoByPaperid } } = this
-
+    this.bank = getJSON(questionBank, [])
     dispatch({
       type: "setClientInfo",
       payload: clientInfo
@@ -129,6 +131,13 @@ export default class Index extends Component {
 
   whritNewQuestion() {
     let { dispatch } = this.props
+    let { bank, info } = this
+    let filterList = OptionController.getNewIndexList(info, bank)
+    let isRight = filterList.length > 0
+    if(!isRight){
+      console.log('没有新题刷了')
+      return
+    }
     //设置为新题模式
     dispatch({
       type: "setNewQuestion"
@@ -139,6 +148,14 @@ export default class Index extends Component {
   }
 
   whritWrongQuestion() {
+    let { dispatch } = this.props
+    let { bank, info } = this
+    let filterList = OptionController.getErrorIndexList(info, bank)
+    let isRight = filterList.length > 0
+    if(!isRight){
+      console.log('没有错题刷了')
+      return
+    }
     //设置为错题模式
     dispatch({
       type: "setErrorQuestion"
@@ -149,6 +166,7 @@ export default class Index extends Component {
   }
 
   componentDidShow() {
+    console.log('didshow')
     let questionInfo = Taro.getStorageSync('questionInfo')
     let info = getJSON(questionInfo)
     let paperName = Taro.getStorageSync('paperName')
