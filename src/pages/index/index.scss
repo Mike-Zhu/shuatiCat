@@ -43,10 +43,18 @@ $bg:#FF6961;
             top:32 * $idx;
         }
         .number{
-
+            position: absolute;
+            left:24 * $idx;
+            top:24 * $idx;
+            font-size: 18 * $idx;
+            line-height: 20 * $idx;
         }
         .title{
-            
+            position: absolute;
+            left:24 * $idx;
+            top:48 * $idx;
+            font-size: 12 * $idx;
+            line-height: 17 * $idx;
         }
     }
 }

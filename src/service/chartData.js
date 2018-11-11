@@ -107,3 +107,20 @@ export function getOldQuestionInfo(info) {
     infoList = scaleList.map(scale => parseInt(completed + scale * unCompleted, 10))
     return infoList
 }
+
+export function getTodayNumber(info) {
+    //今天的刷题量
+    let list = getNewQuestionInfo(info)
+    let len = list.length
+    return list[len]
+}
+
+export function getOldNumber(info) {
+    let completed = 0, unCompleted = 0
+    for (let key in info) {
+        let detail = info[key]
+        let weighted = Number(detail.weighted) || 0
+        weighted >= 7 ? completed++ : unCompleted++
+    }
+    return unCompleted
+}

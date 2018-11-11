@@ -6,7 +6,7 @@ const INITIAL_STATE = {
     isCompleted: false,//是否完成状态
     answer: undefined,
     answerList: [],//多选时候的选项库
-
+    isNewQuestion: true
 }
 
 export default function current(state = INITIAL_STATE, action) {
@@ -40,6 +40,16 @@ export default function current(state = INITIAL_STATE, action) {
             return {
                 ...state,
                 answer: action.payload
+            }
+        case 'setNewQuestion':
+            return {
+                ...state,
+                isNewQuestion: true
+            }
+        case 'setErrorQuestion':
+            return {
+                ...state,
+                isNewQuestion: false
             }
         default:
             return state

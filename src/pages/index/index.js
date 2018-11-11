@@ -10,7 +10,8 @@ import {
   getFutureWeekday,
   getNewQuestionInfo,
   getOldQuestionInfo,
-  get
+  getTodayNumber,
+  getOldNumber
 } from "../..//service/chartData"
 import { getJSON } from "../../service/utils"
 
@@ -55,7 +56,9 @@ export default class Index extends Component {
       },
       errorQuestion: {
         onInit: initChartModel('errorQuestion', this)
-      }
+      },
+      newNumber: 0,
+      oldNumber: 0
     }
   }
   api = {
@@ -68,6 +71,16 @@ export default class Index extends Component {
       let chart = chartCache[key]
       let option = getQuesOption(key, this.info)
       chart.setOption(option)
+    })
+  }
+
+  renderStateFromInfo() {
+    let info = this.info
+    let newNumber = getTodayNumber(info)
+    let oldNumber = getOldNumber(info)
+    this.setState({
+      newNumber,
+      oldNumber
     })
   }
 
@@ -93,6 +106,7 @@ export default class Index extends Component {
     this.info = info && info.data && info.data[paperId]
     Taro.setStorageSync('info', JSON.stringify(this.info))
     this.renderChart()
+    this.renderStateFromInfo()
   }
 
   config = {
@@ -114,13 +128,24 @@ export default class Index extends Component {
   }
 
   whritNewQuestion() {
+    let { dispatch } = this.props
+    //设置为新题模式
+    dispatch({
+      type: "setNewQuestion"
+    })
     Taro.navigateTo({
       url: `/pages/detail/index`
     })
   }
 
   whritWrongQuestion() {
-
+    //设置为错题模式
+    dispatch({
+      type: "setErrorQuestion"
+    })
+    Taro.navigateTo({
+      url: `/pages/detail/index`
+    })
   }
 
   componentDidShow() {
@@ -132,6 +157,7 @@ export default class Index extends Component {
     this.renderChart()
     //这里刷新下paperName就可以
     this.state.paperName !== paperName && this.setState({ paperName })
+    this.renderStateFromInfo()
   }
 
   componentDidHide() { }
@@ -145,10 +171,14 @@ export default class Index extends Component {
         </View>
         <View className="echart-line-view">
           <Button className="button" onClick={this.whritNewQuestion}>刷新题</Button>
+          <Text className="number">{this.state.newNumber}</Text>
+          <Text className="title">Today Practice</Text>
           <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.newQuestion}></ec-canvas>
         </View>
         <View className="echart-line-view">
-          <Button className="button">刷错题</Button>
+          <Button className="button" onClick={this.whritWrongQuestion}>刷错题</Button>
+          <Text className="number">{this.state.oldNumber}</Text>
+          <Text className="title">Forgetting Curve from Today</Text>
           <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.errorQuestion}></ec-canvas>
         </View>
       </View>
