@@ -7,7 +7,7 @@ $bg:#FF6961;
         margin: $idx * 8 0;
         height: $idx * 35;
         background-color: #fff;
-        padding: $idx * 10 $idx * 24 0;
+        padding: $idx * 10 $idx * 16 0 $idx * 24;
         .title{
             line-height: $idx * 20;
             margin: $idx * 2;
@@ -41,6 +41,10 @@ $bg:#FF6961;
             position: absolute;
             right:16 * $idx;
             top:32 * $idx;
+            width: 69 * $idx;
+            height: 25 * $idx;
+            font-size: 12 * $idx;
+            line-height: 25 * $idx;
         }
         .number{
             position: absolute;
