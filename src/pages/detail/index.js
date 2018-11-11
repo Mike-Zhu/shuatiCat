@@ -6,7 +6,8 @@ import gourpPng from '../../icons/group.png'
 import icSend from '../../icons/ic_send.png'
 import buttonPng from '../../icons/button.png'
 import * as OptionController from '../../service/detailController'
-
+import { getJSON } from "../../service/utils"
+import { post, user_id } from "../../service/http"
 
 @connect(({ detail, current }) => {
     return {
@@ -20,14 +21,16 @@ export default class Detail extends Component {
         super(props)
         this.detail = this.detail || {}
     }
-
+    api = {
+        getUpdateInfoCache: "api/getUpdateInfoCache"
+    }
     componentDidShow() {
         let paperId = Taro.getStorageSync('paperId')
         if (this.paperId !== paperId) {
             this.initData()
             this.paperId = Taro.getStorageSync('paperId')
         }
-        this.setDetail(13)
+        this.setDetail()
     }
 
     choice(e) {
@@ -64,9 +67,94 @@ export default class Detail extends Component {
             dispatch({
                 type: 'setCompletd'
             })
+            this.enterTheAnswer()
         }
     }
 
+    enterTheAnswer() {
+        let { detail: { answerList, answer, isMulty, detail: finalDetail } } = this.props
+        let { answer: trueAnswer } = finalDetail
+        let finalAnswer = isMulty ? answerList.join(' ') : answer
+        let isCorrect = finalAnswer === trueAnswer
+        let { getUpdateInfoCache } = this.api
+        this.updateInfo(isCorrect, finalAnswer, finalDetail)
+        let params = this.getParams(isCorrect, finalAnswer)
+        // console.log("finalAnswer", params)
+        // post(getUpdateInfoCache, params)
+    }
+    updateInfo(isCorrect, finalAnswer, finalDetail) {
+        let { id, question_number } = finalDetail
+        let info = this.info
+        let cache = info[question_number] || {}
+        let timeScamp = new Date().getTime()
+        let correct = cache.correct || 0
+        let wrong = cache.wrong || 0
+        let record = getJSON(cache["record"], [])
+        let appearTime = record.length
+        let score = Math.max(1, 7 - appearTime)
+        let primary_key = `${user_id}_${id}`
+        let newRecord = {
+            time: timeScamp,
+            isRight: isCorrect,
+            select: finalAnswer
+        }
+
+        let weighted = isCorrect ? cache.weighted + score : cache.weighted
+        record.push(newRecord)
+        isCorrect ? correct++ : wrong++
+
+        cache = {
+            ...cache,
+            correct,
+            firstDateTime: cache.firstDateTime || timeScamp,
+            lastDateTime: timeScamp,
+            paper_id: Taro.getStorageSync('paperId'),
+            primary_key,
+            question_id: id,
+            question_number,
+            record: JSON.stringify(record),
+            user_id: user_id,
+            weighted,
+            wrong
+        }
+        this.info[question_number] = cache
+        Taro.setStorageSync('questionInfo',JSON.stringify(this.info))
+    }
+
+    getParams(isCorrect, finalAnswer) {
+        let paperId = Taro.getStorageSync('paperId')
+        let { detail: { detail: finalDetail } } = this.props
+        let { id, question_number } = finalDetail
+        let info = this.info
+        let cache = info[question_number] || {}
+        let timeScamp = new Date().getTime()
+        let lastDateTime = timeScamp
+        let firstDateTime = cache.firstBySelectedTime || timeScamp
+        let record = getJSON(cache["record"], [])
+        let appearTime = record.length
+        let weighted = cache["weighted"] || 0
+        let newRecord = {
+            time: timeScamp,
+            isRight: isCorrect,
+            select: finalAnswer
+        }
+        let score = Math.max(1, 7 - appearTime)
+
+        record.push(newRecord)
+        weighted = isCorrect ? weighted + score : isCorrect
+
+        let params = {
+            user_id,
+            paper_id: paperId,
+            question_id: id,
+            question_number,
+            weighted,
+            lastDateTime,
+            record: JSON.stringify(record),
+            firstDateTime
+        }
+        return params
+    }
     enterMulty() {
         let { dispatch, detail } = this.props
         let isRight = this.isMultyAnswerRight()
@@ -77,6 +165,7 @@ export default class Detail extends Component {
             type: 'setPending',
             payload: false
         })
+        this.enterTheAnswer()
     }
 
     isMultyAnswerRight() {
@@ -115,15 +204,18 @@ export default class Detail extends Component {
 
     render() {
         let { detail, options, isCompleted, answer, answerList, isPending } = this.props.detail
-        let { analysis, question_material } = detail
-        let domList = getQuestionRender(detail.question, this.props.clientInfo)
-        options.forEach(result => {
-            result.domList = getQuestionRender(result.value, this.props.clientInfo)
-        })
-        analysis = analysis && analysis.replace(/<\/br>/g, '\/n')
-        let analysisDomList = getQuestionRender(analysis, this.props.clientInfo)
-        let materialList = question_material ? getQuestionRender(question_material, this.props.clientInfo) : []
-        
+        let { analysis, question_material, question } = detail
+        let { clientInfo } = this.props
+
+        question = replaceBR(question)
+        analysis = replaceBR(analysis)
+
+        let domList = getQuestionRender(question, clientInfo)
+        options.forEach(result => { result.domList = getQuestionRender(result.value, clientInfo) })
+        let analysisDomList = getQuestionRender(analysis, clientInfo)
+
+        let materialList = question_material ? getQuestionRender(question_material, clientInfo) : []
+
         return (
             <View className="detail">
                 {question_material &&
@@ -260,14 +352,10 @@ export default class Detail extends Component {
             console.log('没有存储当前题库')
             return
         }
-        let bank = questionBank
-            ? JSON.parse(questionBank)
-            : []
-        let info = questionInfo
-            ? JSON.parse(questionInfo)
-            : {}
+        let bank = getJSON(questionBank, [])
+        let info = getJSON(questionInfo)
         this.bank = bank
-        this.info = info[paperId] || {}
+        this.info = info
     }
 
     config = {
@@ -364,4 +452,9 @@ function getGifUrl(content) {
         url,
         key: url
     }
+}
+
+function replaceBR(str) {
+    if (!str) return str
+    return str.replace(/<\/br>/g, '\/n').replace(/<br \/>/g, '\/n')
 }

@@ -104,7 +104,7 @@ export default class Index extends Component {
       paper_id: paperId
     })
     this.info = info && info.data && info.data[paperId]
-    Taro.setStorageSync('info', JSON.stringify(this.info))
+    Taro.setStorageSync('questionInfo', JSON.stringify(this.info))
     this.renderChart()
     this.renderStateFromInfo()
   }
