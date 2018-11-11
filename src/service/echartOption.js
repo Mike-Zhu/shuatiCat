@@ -9,7 +9,8 @@ let xAxis = {
     type: 'category',
     boundaryGap: false,
     axisLine: {
-        show: false
+        show: false,
+        onZero:false
     },
     axisTick: {
         show: false
@@ -62,7 +63,7 @@ export const newPaper = {
                     inside: true
                 },
                 splitLine: {
-                    show: true,
+                    show: false,
                     lineStyle: {
                         color: '#D8D8D8',
                         type: 'dashed'
@@ -83,11 +84,12 @@ export const newPaper = {
                     }
                 },
                 smooth: false,
-                symbolSize: 6,
+                symbolSize: 4,
+                showSymbol:false,
                 areaStyle: getAreaStyle('#1495EB'),
                 label: {
-                    show: true,
-                    position: 'top'
+                    // show: true,
+                    // position: 'top'
                 },
                 data: [0, 0, 0, 0, 0, 1]
             }
@@ -118,8 +120,9 @@ export const rememberPaper = {
                     show: false,
                     inside: true
                 },
+                //刻度虚线去掉
                 splitLine: {
-                    show: true,
+                    show: false,
                     lineStyle: {
                         color: '#D8D8D8',
                         type: 'dashed'
@@ -139,15 +142,15 @@ export const rememberPaper = {
                         }
                     }
                 },
-                smooth: false,
-                symbolSize: 6,
+                smooth: 0,
+                symbol: "emptyCircle",
+                symbolSize: 4,
+                showSymbol:false,
                 areaStyle: getAreaStyle('#FF5B29'),
-                label: {
-                    normal: {
-                        show: true,
-                        position: 'top'
-                    }
-                },
+                // label: {
+                //     show: true,
+                //     position: 'top'
+                // },
                 data: [0, 15, 40, 30, 80, 50]
             }
         ]

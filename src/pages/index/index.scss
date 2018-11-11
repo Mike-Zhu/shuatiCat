@@ -12,6 +12,11 @@ $bg:#FF6961;
             line-height: $idx * 20;
             margin: $idx * 2;
             font-size: 18 * $idx;
+            display: inline-block;
+            width: 230 * $idx;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
         }
         button{
             float: right;
@@ -25,8 +30,23 @@ $bg:#FF6961;
         }
     }
     .echart-line-view {
-        height: 404 * $idx;
+        height: 200 * $idx;
         width: 100%;
         z-index: 999;
+        background-color: #fff;
+        position: relative;
+        margin-top: 6 * $idx;
+        padding-top: 80 * $idx;
+        .button{
+            position: absolute;
+            right:16 * $idx;
+            top:32 * $idx;
+        }
+        .number{
+
+        }
+        .title{
+            
+        }
     }
 }

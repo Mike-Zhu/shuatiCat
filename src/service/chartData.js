@@ -11,26 +11,42 @@ const daysTransfer = {
 }
 
 const dayTimeScamp = 24 * 60 * 60 * 1000
+const today = {
+    value: '今日',
+    textStyle: {
+        fontSize: 12,
+        color: '#172434'
+    }
+}
+const otherDayStyle = {
+    fontSize: 12,
+    color: '#8E9091'
+}
 export function getWeekdayList() {
-    let weekArray = []
-    for (var i = 5; i > 0; i--) {
+    let weekArray = [], i = 5
+    while (i > 0) {
         let day = moment().subtract(i, 'days').format('dddd')
         let d = {
             value: daysTransfer[day],
-            textStyle: {
-                fontSize: 12,
-                color: '#8E9091'
-            }
+            textStyle: otherDayStyle
+        }
+        weekArray.push(d)
+        i--
+    }
+    weekArray.push(today)
+    return weekArray
+}
+
+export function getFutureWeekday() {
+    let weekArray = [today]
+    for (var i = 1; i < 6; i++) {
+        let day = moment().add(i, 'days').format('dddd')
+        let d = {
+            value: daysTransfer[day],
+            textStyle: otherDayStyle
         }
         weekArray.push(d)
     }
-    weekArray.push({
-        value: '今日',
-        textStyle: {
-            fontSize: 12,
-            color: '#172434'
-        }
-    })
     return weekArray
 }
 
@@ -63,15 +79,12 @@ export function getNewQuestionInfo(info) {
     let keyList = Object.keys(info)
     let { scampList, maxTime, minTime } = getScampList()
     let finalInfo = []
-    console.log({ maxTime, minTime })
     keyList.forEach(key => {
         let questionInfo = info[key]
         let { firstDateTime } = questionInfo
         let isFinalInfo = firstDateTime >= minTime && maxTime > firstDateTime
-        console.log(firstDateTime)
         isFinalInfo && finalInfo.push(questionInfo)
     })
-    console.log(finalInfo)
     finalInfo.forEach(({ firstDateTime }) => {
         scampList.forEach(({ max, min }, index) => {
             let isThisIndex = firstDateTime >= min && firstDateTime < max
@@ -82,5 +95,15 @@ export function getNewQuestionInfo(info) {
 }
 
 export function getOldQuestionInfo(info) {
-
+    let infoList = Array(6).fill(0)
+    //完全记忆与未完全记忆
+    let completed = 0, unCompleted = 0
+    for (let key in info) {
+        let detail = info[key]
+        let weighted = Number(detail.weighted) || 0
+        weighted >= 7 ? completed++ : unCompleted++
+    }
+    let scaleList = [1, 0.6, 0.45, 0.36, 0.34, 0.28]
+    infoList = scaleList.map(scale => parseInt(completed + scale * unCompleted, 10))
+    return infoList
 }

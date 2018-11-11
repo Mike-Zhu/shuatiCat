@@ -7,16 +7,18 @@ import * as echarts from '../../components/ec-canvas/echarts';
 import { newPaper, rememberPaper } from '../../service/echartOption';
 import {
   getWeekdayList,
+  getFutureWeekday,
   getNewQuestionInfo,
-  getOldQuestionInfo
+  getOldQuestionInfo,
+  get
 } from "../..//service/chartData"
 import { getJSON } from "../../service/utils"
 
 let chartCache = {} //存储chart
 
 function getQuesOption(key, info) {
-  let weekday = getWeekdayList()
   let isNewQuestion = key === "newQuestion"
+  let weekday = isNewQuestion ? getWeekdayList() : getFutureWeekday()
   let newInfo = isNewQuestion ? getNewQuestionInfo(info) : getOldQuestionInfo(info)
   let option = isNewQuestion ? newPaper.option : rememberPaper.option
 
@@ -42,22 +44,24 @@ function initChartModel(key, that) {
 
 @connect(({ counter }) => ({
   counter
-}), (dispatch) => ({
-
 }))
 export default class Index extends Component {
   constructor(props) {
     super(props)
     this.state = {
       paperName: "default",
-      ec: {
+      newQuestion: {
         onInit: initChartModel('newQuestion', this)
+      },
+      errorQuestion: {
+        onInit: initChartModel('errorQuestion', this)
       }
     }
   }
   api = {
     getQuestionInfoByPaperid: "api/getQuestionInfoByPaperid"
   }
+
   renderChart() {
     let chartArr = Object.keys(chartCache)
     chartArr.forEach(key => {
@@ -69,10 +73,8 @@ export default class Index extends Component {
 
   async componentDidMount() {
     let questionBank = Taro.getStorageSync('questionBank')
-    // let questionInfo = Taro.getStorageSync('questionInfo')
-    // let info = getJSON(questionInfo)
     let paperId = Taro.getStorageSync('paperId')
-    let paperName = Taro.getStorageSync('paperName', paperName)
+    let paperName = Taro.getStorageSync('paperName')
     let clientInfo = await Taro.getSystemInfo()
     let { dispatch } = this.props
     let { api: { getQuestionInfoByPaperid } } = this
@@ -83,14 +85,13 @@ export default class Index extends Component {
     })
 
     if (!paperId) { throw new Error('没有存储当前题库') }
-    this.bank = getJSON(questionBank)
     this.setState({ paperName })
     let info = await http.get(getQuestionInfoByPaperid, {
       user_id,
       paper_id: paperId
     })
-    console.log(info)
     this.info = info && info.data && info.data[paperId]
+    Taro.setStorageSync('info', JSON.stringify(this.info))
     this.renderChart()
   }
 
@@ -122,7 +123,16 @@ export default class Index extends Component {
 
   }
 
-  componentDidShow() { }
+  componentDidShow() {
+    let questionInfo = Taro.getStorageSync('questionInfo')
+    let info = getJSON(questionInfo)
+    let paperName = Taro.getStorageSync('paperName')
+    //因为echart的渲染与dom不同，所以这里info不用存在state里
+    this.info = info
+    this.renderChart()
+    //这里刷新下paperName就可以
+    this.state.paperName !== paperName && this.setState({ paperName })
+  }
 
   componentDidHide() { }
 
@@ -133,14 +143,13 @@ export default class Index extends Component {
           <Text className="title">{this.state.paperName}</Text>
           <Button onClick={this.routeGo} data-value="college">SELECT</Button>
         </View>
-        <View>
-          <Button onClick={this.whritNewQuestion}>刷新题</Button>
-        </View>
-        {/* <View>
-          <Button>刷错题</Button>
-        </View> */}
         <View className="echart-line-view">
-          <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.ec}></ec-canvas>
+          <Button className="button" onClick={this.whritNewQuestion}>刷新题</Button>
+          <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.newQuestion}></ec-canvas>
+        </View>
+        <View className="echart-line-view">
+          <Button className="button">刷错题</Button>
+          <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.errorQuestion}></ec-canvas>
         </View>
       </View>
     )

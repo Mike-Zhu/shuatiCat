@@ -51,21 +51,23 @@ export default class SelectType extends Component {
         let paperId = dataset.id,
             paperName = dataset.name
         let { api: { getPaper, getQuestionInfoByPaperid } } = this
-        let paper = await http.get(getPaper, {
-            user_id,
-            paperId
-        })
         let questionInfo = await http.get(getQuestionInfoByPaperid, {
             user_id,
             paper_id: paperId
         })
+        let paper = await http.get(getPaper, {
+            user_id,
+            paperId
+        })
+        let info = questionInfo && questionInfo.data && questionInfo.data[paperId]
+        info = info && {}
         Taro.setStorageSync('paperId', paperId)
         Taro.setStorageSync('paperName', paperName)
         Taro.setStorageSync('questionBank', JSON.stringify(paper.data))
-        Taro.setStorageSync('questionInfo', JSON.stringify(questionInfo.data))
-        // Taro.navigateTo({
-        //     url: `/pages/selectType/index?type=${value}`
-        // })
+        Taro.setStorageSync('questionInfo', JSON.stringify(info))
+        Taro.navigateTo({
+            url: `/pages/index/index`
+        })
     }
     render() {
         let { select: { paperList } } = this.props
@@ -74,10 +76,10 @@ export default class SelectType extends Component {
                 {paperList.map(content => (
                     <View class="content" key={content.id}>
                         <Text>{content.title}</Text>
-                        <Button 
+                        <Button
                             onClick={this.download}
-                            data-id={content.id} 
-                            data-name ={content.title}
+                            data-id={content.id}
+                            data-name={content.title}
                         >SELECT</Button>
                     </View>
                 ))}
