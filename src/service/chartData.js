@@ -36,6 +36,7 @@ export function getWeekdayList() {
 
 function getScampList() {
     let today = moment().format('YYYY-MM-DD')
+    let currentTime
     let maxTime = currentTime = new Date(today).getTime() + dayTimeScamp
     let minTime
     let scampList = []
@@ -58,9 +59,19 @@ function getScampList() {
 
 export function getNewQuestionInfo(info) {
     let infoList = Array(6).fill(0)
-    if (!info || !Array.isArray(info)) { return infoList }
+    if (!info) { return infoList }
+    let keyList = Object.keys(info)
     let { scampList, maxTime, minTime } = getScampList()
-    let finalInfo = info.filter(({ firstDateTime }) => firstDateTime >= minTime && maxTime > firstDateTime)
+    let finalInfo = []
+    console.log({ maxTime, minTime })
+    keyList.forEach(key => {
+        let questionInfo = info[key]
+        let { firstDateTime } = questionInfo
+        let isFinalInfo = firstDateTime >= minTime && maxTime > firstDateTime
+        console.log(firstDateTime)
+        isFinalInfo && finalInfo.push(questionInfo)
+    })
+    console.log(finalInfo)
     finalInfo.forEach(({ firstDateTime }) => {
         scampList.forEach(({ max, min }, index) => {
             let isThisIndex = firstDateTime >= min && firstDateTime < max

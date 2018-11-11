@@ -63,7 +63,6 @@ export default class Index extends Component {
     chartArr.forEach(key => {
       let chart = chartCache[key]
       let option = getQuesOption(key, this.info)
-      console.log(option)
       chart.setOption(option)
     })
   }
@@ -90,7 +89,8 @@ export default class Index extends Component {
       user_id,
       paper_id: paperId
     })
-    this.info = info[paperId]
+    console.log(info)
+    this.info = info && info.data && info.data[paperId]
     this.renderChart()
   }
 
