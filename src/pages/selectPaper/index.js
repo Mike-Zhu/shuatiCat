@@ -48,6 +48,7 @@ export default class SelectType extends Component {
         })
     }
     async download(e) {
+        let user_id = Taro.getStorageSync('user_id')
         let dataset = e.target.dataset || {}
         let paperId = dataset.id,
             paperName = dataset.name

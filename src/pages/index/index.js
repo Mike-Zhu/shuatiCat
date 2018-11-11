@@ -175,7 +175,6 @@ export default class Index extends Component {
     let paperName = Taro.getStorageSync('paperName')
     //因为echart的渲染与dom不同，所以这里info不用存在state里
     this.info = info
-    console.log(this.info)
     this.renderChart()
     //这里刷新下paperName就可以
     this.state.paperName !== paperName && this.setState({ paperName })

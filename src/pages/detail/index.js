@@ -102,9 +102,6 @@ export default class Detail extends Component {
         }
         let weighted = cache.weighted ? Number(cache.weighted) : 0
 
-        console.log("cache.weighted", cache.weighted)
-        console.log("weighted", weighted)
-        console.log("isCorrect", isCorrect)
         weighted = isCorrect ? weighted + score : weighted
         record.push(newRecord)
         isCorrect ? correct++ : wrong++
@@ -130,7 +127,7 @@ export default class Detail extends Component {
     getParams(isCorrect) {
         let { detail: { detail: finalDetail } } = this.props
         let { id, question_number } = finalDetail
-        let { info, user_id } = this.info
+        let { info, user_id } = this
         let cache = info[question_number]
 
         let {
