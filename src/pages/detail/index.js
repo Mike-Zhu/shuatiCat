@@ -98,8 +98,12 @@ export default class Detail extends Component {
             isRight: isCorrect,
             select: finalAnswer
         }
+        let weighted = cache.weighted ? Number(cache.weighted) : 0
 
-        let weighted = isCorrect ? cache.weighted + score : cache.weighted
+        console.log("cache.weighted",cache.weighted)
+        console.log("weighted",weighted)
+        console.log("isCorrect",isCorrect)
+        weighted = isCorrect ? weighted + score : weighted
         record.push(newRecord)
         isCorrect ? correct++ : wrong++
 
@@ -334,25 +338,32 @@ export default class Detail extends Component {
                 isCompleted: false
             }
         })
-        // console.log('detail => ', detail)
     }
 
     getNewQuestion(number = 0) {
         let info = this.info, bank = this.bank
         let filterList = OptionController.getNewIndexList(info, bank)
-        let finalQuestionList = bank.filter(ques => {
-            return filterList.indexOf(ques.question_number) >= 0
-        })
+
+        let finalQuestionList = bank.filter(ques => filterList.indexOf(ques.question_number) >= 0)
         return finalQuestionList[number]
     }
 
+    prevNumber
     getErrorQuestion(number = 0) {
         let info = this.info, bank = this.bank
         let filterList = OptionController.getErrorIndexList(info)
-        let finalQuestionList = bank.filter(ques => {
-            return filterList.indexOf(ques.question_number) >= 0
-        })
-        return finalQuestionList[number]
+
+        let preIndex = filterList.indexOf(this.prevNumber)
+        let couldBeFixed = preIndex >= 0 && filterList.length > 1
+        if (couldBeFixed) filterList.splice(preIndex, 1)
+
+        let length = filterList.length
+        number = parseInt(Math.random() * length, 10)
+
+        let finalQuestionList = bank.filter(ques => filterList.indexOf(ques.question_number) >= 0)
+        let errorQues = finalQuestionList[number]
+        this.prevNumber = errorQues && errorQues.question_number
+        return errorQues
     }
 
     initData() {

@@ -86,7 +86,6 @@ export default class Index extends Component {
   }
 
   async componentDidMount() {
-    console.log('didmount')
     let questionBank = Taro.getStorageSync('questionBank')
     let paperId = Taro.getStorageSync('paperId')
     let paperName = Taro.getStorageSync('paperName')
@@ -106,6 +105,7 @@ export default class Index extends Component {
       paper_id: paperId
     })
     this.info = info && info.data && info.data[paperId]
+    this.info = this.info || {}
     Taro.setStorageSync('questionInfo', JSON.stringify(this.info))
     this.renderChart()
     this.renderStateFromInfo()
@@ -166,12 +166,12 @@ export default class Index extends Component {
   }
 
   componentDidShow() {
-    console.log('didshow')
     let questionInfo = Taro.getStorageSync('questionInfo')
     let info = getJSON(questionInfo)
     let paperName = Taro.getStorageSync('paperName')
     //因为echart的渲染与dom不同，所以这里info不用存在state里
     this.info = info
+    console.log(this.info)
     this.renderChart()
     //这里刷新下paperName就可以
     this.state.paperName !== paperName && this.setState({ paperName })
