@@ -3,7 +3,7 @@ import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { add, minus, asyncAdd } from '../../actions/counter'
-import http, { user_id } from '../../service/http'
+import http from '../../service/http'
 import './index.scss'
 
 
@@ -30,6 +30,7 @@ export default class College extends Component {
     }
     async componentDidMount() {
         let { getSecondType } = this.api
+        let user_id = Taro.getStorageSync('user_id')
         let secondType = await http.get(getSecondType, {
             user_id
         })

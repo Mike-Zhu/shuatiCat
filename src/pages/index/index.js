@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
-import http, { user_id } from '../../service/http'
+import http from '../../service/http'
 import './index.scss'
 import * as echarts from '../../components/ec-canvas/echarts';
 import { newPaper, rememberPaper } from '../../service/echartOption';
@@ -15,6 +15,9 @@ import {
 } from "../..//service/chartData"
 import { getJSON } from "../../service/utils"
 import * as OptionController from '../../service/detailController'
+import { wxLogin } from "../../service/login"
+
+let isLogin = wxLogin()
 
 let chartCache = {} //存储chart
 
@@ -90,6 +93,7 @@ export default class Index extends Component {
     let paperId = Taro.getStorageSync('paperId')
     let paperName = Taro.getStorageSync('paperName')
     let clientInfo = await Taro.getSystemInfo()
+    let user_id = Taro.getStorageSync('user_id')
     let { dispatch } = this.props
     let { api: { getQuestionInfoByPaperid } } = this
     this.bank = getJSON(questionBank, [])
@@ -134,7 +138,7 @@ export default class Index extends Component {
     let { bank, info } = this
     let filterList = OptionController.getNewIndexList(info, bank)
     let isRight = filterList.length > 0
-    if(!isRight){
+    if (!isRight) {
       console.log('没有新题刷了')
       return
     }
@@ -152,7 +156,7 @@ export default class Index extends Component {
     let { bank, info } = this
     let filterList = OptionController.getErrorIndexList(info, bank)
     let isRight = filterList.length > 0
-    if(!isRight){
+    if (!isRight) {
       console.log('没有错题刷了')
       return
     }

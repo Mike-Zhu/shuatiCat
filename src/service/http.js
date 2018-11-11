@@ -1,10 +1,12 @@
 import { webURL } from '../constants/utils'
 import Taro from '@tarojs/taro'
 
-export const user_id = 'SS00000001'
-export const token = '920603cb89871e19a7684dc757dade7c'
+// export const user_id 
+// export const token = '920603cb89871e19a7684dc757dade7c'
 
 export function post(api, data) {
+    let user_id = Taro.getStorageSync('user_id')
+    let token = Taro.getStorageSync('token')
     let url = webURL + api,
         header = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -21,6 +23,8 @@ export function post(api, data) {
 }
 
 export function get(api, data) {
+    let user_id = Taro.getStorageSync('user_id')
+    let token = Taro.getStorageSync('token')
     let url = webURL + api,
         header = {
             'Content-Type': 'application/x-www-form-urlencoded',

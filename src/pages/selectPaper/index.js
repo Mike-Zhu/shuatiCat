@@ -2,7 +2,7 @@ import Taro, { Component } from '@tarojs/taro'
 import { View, Button, Text } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import http, { user_id } from '../../service/http'
+import http from '../../service/http'
 import './index.scss'
 
 
@@ -33,6 +33,7 @@ export default class SelectType extends Component {
     }
     async componentDidMount() {
         let { type } = this.$router.params
+        let user_id = Taro.getStorageSync('user_id')
         Taro.setNavigationBarTitle({
             title: type
         })

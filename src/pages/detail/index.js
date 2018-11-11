@@ -7,7 +7,7 @@ import icSend from '../../icons/ic_send.png'
 import buttonPng from '../../icons/button.png'
 import * as OptionController from '../../service/detailController'
 import { getJSON } from "../../service/utils"
-import { post, user_id } from "../../service/http"
+import { post } from "../../service/http"
 
 @connect(({ detail, current }) => {
     return {
@@ -20,6 +20,8 @@ export default class Detail extends Component {
     constructor(props) {
         super(props)
         this.detail = this.detail || {}
+        this.user_id = Taro.getStorageSync('user_id')
+
     }
     api = {
         getUpdateInfoCache: "api/getUpdateInfoCache"
@@ -84,7 +86,7 @@ export default class Detail extends Component {
     }
     updateInfo(isCorrect, finalAnswer, finalDetail) {
         let { id, question_number } = finalDetail
-        let info = this.info
+        let { info, user_id } = this
         let cache = info[question_number] || {}
         let timeScamp = new Date().getTime()
         let correct = cache.correct || 0
@@ -100,9 +102,9 @@ export default class Detail extends Component {
         }
         let weighted = cache.weighted ? Number(cache.weighted) : 0
 
-        console.log("cache.weighted",cache.weighted)
-        console.log("weighted",weighted)
-        console.log("isCorrect",isCorrect)
+        console.log("cache.weighted", cache.weighted)
+        console.log("weighted", weighted)
+        console.log("isCorrect", isCorrect)
         weighted = isCorrect ? weighted + score : weighted
         record.push(newRecord)
         isCorrect ? correct++ : wrong++
@@ -128,7 +130,7 @@ export default class Detail extends Component {
     getParams(isCorrect) {
         let { detail: { detail: finalDetail } } = this.props
         let { id, question_number } = finalDetail
-        let info = this.info
+        let { info, user_id } = this.info
         let cache = info[question_number]
 
         let {
