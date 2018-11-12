@@ -192,6 +192,17 @@ export default class Detail extends Component {
         }
         post(wrongFeedBack, params)
     }
+
+    previewImage(e) {
+        let dataset = e.target.dataset
+        let { should, url } = dataset
+        if(!should) return
+        let params = {
+            urls: [url]
+        }
+        Taro.previewImage(params)
+    }
+
     getOptionClassName(key, answerList) {
         let {
             isMulty,
@@ -251,7 +262,10 @@ export default class Detail extends Component {
                         {materialList.map(res => {
                             return res.type === "Text"
                                 ? <Text key={res.key}>{res.value}</Text>
-                                : res.type === "Image" ? <Image style={res.style} key={res.key} src={res.url} />
+                                : res.type === "Image"
+                                    ? <View data-should={res.shouldBeMaxed} data-url={res.url} onClick={this.previewImage} >
+                                        <Image data-should={res.shouldBeMaxed} data-url={res.url} style={res.style} key={res.key} src={res.url} />
+                                    </View>
                                     : <Image key={res.key} src={res.url} />
                         })}
                     </View>
@@ -266,7 +280,10 @@ export default class Detail extends Component {
                     {domList.map(res => {
                         return res.type === "Text"
                             ? <Text key={res.key}>{res.value}</Text>
-                            : res.type === "Image" ? <Image style={res.style} key={res.key} src={res.url} />
+                            : res.type === "Image"
+                                ? <View data-should={res.shouldBeMaxed} data-url={res.url} onClick={this.previewImage} >
+                                    <Image data-should={res.shouldBeMaxed} data-url={res.url} style={res.style} key={res.key} src={res.url} />
+                                </View>
                                 : <Image key={res.key} src={res.url} />
                     })}
                 </View>
