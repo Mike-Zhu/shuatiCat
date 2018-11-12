@@ -73,6 +73,11 @@ export default class SelectType extends Component {
     }
     render() {
         let { select: { paperList } } = this.props
+        paperList = paperList.sort((left,right) => {
+            let leftTitle = left.title && left.title.slice(0,4)
+            let rightTitle = right.title && right.title.slice(0,4)
+            return Number(rightTitle) - Number(leftTitle)
+        })
         return (
             <View className="select">
                 {paperList.map(content => (

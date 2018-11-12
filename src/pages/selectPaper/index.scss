@@ -1,4 +1,6 @@
 $h:2px;
+$bg:linear-gradient(to right, #FF6961, #FF8D29);
+
 page{
     background-color: #fafafa;
 }
@@ -21,6 +23,7 @@ page{
         }
         button{
             margin: 23 * $h 20 * $h 0 0;
+            background: $bg;
         }
     }
 }

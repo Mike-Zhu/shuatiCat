@@ -8,6 +8,7 @@ import buttonPng from '../../icons/button.png'
 import * as OptionController from '../../service/detailController'
 import { getJSON } from "../../service/utils"
 import { post } from "../../service/http"
+import Alert from "../../components/alert"
 
 @connect(({ detail, current }) => {
     return {
@@ -216,6 +217,7 @@ export default class Detail extends Component {
 
         return (
             <View className="detail">
+                <LoginStatus isLoggedIn={true} />
                 {question_material &&
                     <View className="tags">
                         Material
@@ -477,5 +479,5 @@ function getGifUrl(content) {
 
 function replaceBR(str) {
     if (!str) return str
-    return str.replace(/<\/br>/g, '\/n').replace(/<br \/>/g, '\/n')
+    return str.replace(/<\/br>/g, '\n').replace(/<br \/>/g, '\n')
 }

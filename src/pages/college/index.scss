@@ -1,4 +1,5 @@
 $h:2px;
+$bg:linear-gradient(to right, #FF6961, #FF8D29);
 .select{
     background-color: #fafafa;
     .down-title{
@@ -28,6 +29,7 @@ $h:2px;
             }
             button{
                 margin: 23 * $h 20 * $h 0 0;
+                background: $bg;
             }
         }
     }
