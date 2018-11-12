@@ -54,7 +54,7 @@ export default class Index extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      paperName: "default",
+      paperName: "当前暂无题库信息",
       newQuestion: {
         onInit: initChartModel('newQuestion', this)
       },
@@ -102,7 +102,7 @@ export default class Index extends Component {
       payload: clientInfo
     })
 
-    if (!paperId) { throw new Error('没有存储当前题库') }
+    if (!paperId) { return }//throw new Error('没有存储当前题库') }
     this.setState({ paperName })
     let info = await http.get(getQuestionInfoByPaperid, {
       user_id,
@@ -177,7 +177,7 @@ export default class Index extends Component {
     this.info = info
     this.renderChart()
     //这里刷新下paperName就可以
-    this.state.paperName !== paperName && this.setState({ paperName })
+    this.state.paperName !== paperName && paperName && this.setState({ paperName })
     this.renderStateFromInfo()
   }
 
