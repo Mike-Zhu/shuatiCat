@@ -139,7 +139,10 @@ export default class Index extends Component {
     let filterList = OptionController.getNewIndexList(info, bank)
     let isRight = filterList.length > 0
     if (!isRight) {
-      console.log('没有新题刷了')
+      Taro.showToast({
+        title: "没有新题刷了",
+        icon: "none"
+      })
       return
     }
     //设置为新题模式
@@ -157,7 +160,10 @@ export default class Index extends Component {
     let filterList = OptionController.getErrorIndexList(info, bank)
     let isRight = filterList.length > 0
     if (!isRight) {
-      console.log('没有错题刷了')
+      Taro.showToast({
+        title: "没有错题刷了",
+        icon: "none"
+      })
       return
     }
     //设置为错题模式

@@ -336,8 +336,11 @@ export default class Detail extends Component {
         let detail = isNewQuestion ? this.getNewQuestion(number) : this.getErrorQuestion(number)
         //没有返回说明题已经刷完,回到主页
         if (!detail) {
-            console.log("题已刷完!")
-            Taro.navigateBack()
+            Taro.showToast({
+                title: "题已刷完,请切换题库",
+                icon: "none",
+                duration: 1500
+            }).then(() => setTimeout(() => Taro.navigateBack(), 1500))
             return
         }
         Taro.setNavigationBarTitle({
