@@ -53,6 +53,9 @@ export default class SelectType extends Component {
         let paperId = dataset.id,
             paperName = dataset.name
         let { api: { getPaper, getQuestionInfoByPaperid } } = this
+        Taro.showLoading({
+            title:"下载中,请稍候"
+        })
         let questionInfo = await http.get(getQuestionInfoByPaperid, {
             user_id,
             paper_id: paperId
@@ -67,7 +70,8 @@ export default class SelectType extends Component {
         Taro.setStorageSync('paperName', paperName)
         Taro.setStorageSync('questionBank', JSON.stringify(paper.data))
         Taro.setStorageSync('questionInfo', JSON.stringify(info))
-        Taro.navigateTo({
+        Taro.hideLoading()
+        Taro.redirectTo({
             url: `/pages/index/index`
         })
     }
