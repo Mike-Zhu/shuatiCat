@@ -25,7 +25,8 @@ export default class Detail extends Component {
 
     }
     api = {
-        getUpdateInfoCache: "api/getUpdateInfoCache"
+        getUpdateInfoCache: "api/getUpdateInfoCache",
+        wrongFeedBack: "api/wrongFeedBack"
     }
     componentDidShow() {
         let paperId = Taro.getStorageSync('paperId')
@@ -172,6 +173,25 @@ export default class Detail extends Component {
         let answer = answerList.sort().join()
         return trueAnswerSrting === answer
     }
+
+    async sendFeedBack() {
+        let isRight = await Taro.showModal({
+            title: "确认提交?"
+        })
+        let { confirm } = isRight || {}
+        if (!confirm) return
+        let { user_id } = this
+        let { wrongFeedBack } = this.api
+        let { detail } = this.props.detail
+        let { title, id, question_number } = detail
+        let params = {
+            user_id,
+            title,
+            id,
+            question_number
+        }
+        post(wrongFeedBack, params)
+    }
     getOptionClassName(key, answerList) {
         let {
             isMulty,
@@ -214,8 +234,8 @@ export default class Detail extends Component {
 
         let materialList = question_material ? getQuestionRender(question_material, clientInfo) : []
         let noMaterialStyle = {
-            height: (clientInfo.screenHeight - 100) / 2 + 'px',
-            borderBottom:'1px solid #dbdbdb'
+            height: (clientInfo && clientInfo.screenHeight - 100) / 2 + 'px',
+            borderBottom: '1px solid #dbdbdb'
         }
         return (
             <View className="detail">
@@ -242,7 +262,7 @@ export default class Detail extends Component {
                         题目内容
                     </View>
                 }
-                <View className="question" style = {!question_material && noMaterialStyle}>
+                <View className="question" style={!question_material && noMaterialStyle}>
                     {domList.map(res => {
                         return res.type === "Text"
                             ? <Text key={res.key}>{res.value}</Text>
@@ -293,7 +313,7 @@ export default class Detail extends Component {
                 {isCompleted && <Text className="tags">
                     内容有误？
                 </Text>}
-                {isCompleted && <View className="feedback">
+                {isCompleted && <View onClick={this.sendFeedBack} className="feedback">
                     <Image src={gourpPng} className="group"></Image>
                     <Text>报告错误内容</Text>
                     <Image src={icSend} className="icsend"></Image>
