@@ -51,7 +51,7 @@ export function getFutureWeekday() {
 }
 
 function getScampList() {
-    let today = moment().format('YYYY-MM-DD')
+    let today = moment().format('YYYY-MM-DD 00:00:00')
     let currentTime
     let maxTime = currentTime = new Date(today).getTime() + dayTimeScamp
     let minTime
