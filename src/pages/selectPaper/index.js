@@ -87,7 +87,7 @@ export default class SelectType extends Component {
                             onClick={this.download}
                             data-id={content.id}
                             data-name={content.title}
-                        >SELECT</Button>
+                        >选择</Button>
                     </View>
                 ))}
             </View>

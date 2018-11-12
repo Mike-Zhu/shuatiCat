@@ -118,7 +118,7 @@ export default class Index extends Component {
   config = {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#FF6961",
-    "navigationBarTitleText": "刷题猫",
+    "navigationBarTitleText": "刷题统计",
     "navigationBarTextStyle": "#fff",
     usingComponents: {
       'ec-canvas': '../../components/ec-canvas/ec-canvas' // 书写第三方组件的相对路径
@@ -188,18 +188,18 @@ export default class Index extends Component {
       <View className='main'>
         <View className="select-paper">
           <Text className="title">{this.state.paperName}</Text>
-          <Button onClick={this.routeGo} data-value="college">SELECT</Button>
+          <Button onClick={this.routeGo} data-value="college">选题库</Button>
         </View>
         <View className="echart-line-view">
           <Button className="button" onClick={this.whritNewQuestion}>刷新题</Button>
           <Text className="number">{this.state.newNumber}</Text>
-          <Text className="title">Today Practice</Text>
+          <Text className="title">今日刷题数量</Text>
           <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.newQuestion}></ec-canvas>
         </View>
         <View className="echart-line-view">
           <Button className="button" onClick={this.whritWrongQuestion}>刷错题</Button>
           <Text className="number">{this.state.oldNumber}</Text>
-          <Text className="title">Forgetting Curve from Today</Text>
+          <Text className="title">未来5日遗忘数量预测</Text>
           <ec-canvas id='mychart-dom-line' canvas-id='mychart-line' ec={this.state.errorQuestion}></ec-canvas>
         </View>
       </View>

@@ -25,7 +25,7 @@ export default class College extends Component {
     config = {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#FF6961",
-        "navigationBarTitleText": "Select Subject",
+        "navigationBarTitleText": "选择题库",
         "navigationBarTextStyle": "#fff",
     }
     async componentDidMount() {
@@ -59,7 +59,7 @@ export default class College extends Component {
                             {second.content.map(content => (
                                 <View class="content" key={content.secondType}>
                                     <Text>{content.secondType}</Text>
-                                    <Button onClick={this.routeGo} data-value={content}>SELECT</Button>
+                                    <Button onClick={this.routeGo} data-value={content}>选择</Button>
                                 </View>
                             ))}
                         </View>

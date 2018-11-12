@@ -91,7 +91,7 @@ page{
         padding: 12 * $h 72 * $h;
         margin-bottom: 16 * $h;
         position: relative;
-        input{
+        input,text{
             height: 24 * $h;
         }
         image{

@@ -21,13 +21,6 @@ $bg:linear-gradient(to right, #FF6961, #FF8D29);
         }
         button{
             float: right;
-            background: $bg;
-            width: 69 * $idx;
-            height: 25 * $idx;
-            font-size: 12 * $idx;
-            line-height: 25 * $idx;
-            border:none;
-            color: #fff;
         }
     }
     .echart-line-view {
@@ -42,11 +35,6 @@ $bg:linear-gradient(to right, #FF6961, #FF8D29);
             position: absolute;
             right:16 * $idx;
             top:32 * $idx;
-            width: 69 * $idx;
-            height: 25 * $idx;
-            font-size: 12 * $idx;
-            line-height: 25 * $idx;
-            background: $bg;
         }
         .number{
             position: absolute;

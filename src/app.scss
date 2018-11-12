@@ -1,12 +1,14 @@
 $idx:2px;
-$bg:#FF6961;
+$bg:linear-gradient(to right, #FF6961, #FF8D29);
+
 button{
     float: right;
-    background-color: $bg;
+    background: $bg;
     width: 69 * $idx;
     height: 25 * $idx;
     font-size: 12 * $idx;
     line-height: 25 * $idx;
     border:none;
     color: #fff;
+    border-radius: 2 * $idx;
 }

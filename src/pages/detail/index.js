@@ -82,7 +82,6 @@ export default class Detail extends Component {
         let { getUpdateInfoCache } = this.api
         this.updateInfo(isCorrect, finalAnswer, finalDetail)
         let params = this.getParams(isCorrect, finalAnswer)
-        // console.log("finalAnswer", params)
         post(getUpdateInfoCache, params)
     }
     updateInfo(isCorrect, finalAnswer, finalDetail) {
@@ -214,13 +213,16 @@ export default class Detail extends Component {
         let analysisDomList = getQuestionRender(analysis, clientInfo)
 
         let materialList = question_material ? getQuestionRender(question_material, clientInfo) : []
-
+        let noMaterialStyle = {
+            height: (clientInfo.screenHeight - 100) / 2 + 'px',
+            borderBottom:'1px solid #dbdbdb'
+        }
         return (
             <View className="detail">
                 <LoginStatus isLoggedIn={true} />
                 {question_material &&
                     <View className="tags">
-                        Material
+                        材料分析
                     </View>
                 }
                 {
@@ -234,10 +236,13 @@ export default class Detail extends Component {
                         })}
                     </View>
                 }
-                <View className="tags">
-                    Question
-                </View>
-                <View className="question">
+                {
+                    question_material &&
+                    <View className="tags">
+                        题目内容
+                    </View>
+                }
+                <View className="question" style = {!question_material && noMaterialStyle}>
                     {domList.map(res => {
                         return res.type === "Text"
                             ? <Text key={res.key}>{res.value}</Text>
@@ -246,7 +251,7 @@ export default class Detail extends Component {
                     })}
                 </View>
                 <View className="tags">
-                    Options
+                    选项
                     {isPending && answerList.length > 0 && <Button onClick={this.enterMulty}>确定</Button>}
                 </View>
                 <View className="options">
@@ -272,7 +277,7 @@ export default class Detail extends Component {
                 {
                     isCompleted &&
                     <Text className="tags">
-                        Answer Analysis
+                        答案分析
                     </Text>
                 }
                 {isCompleted && <View className="analysis">
@@ -286,11 +291,11 @@ export default class Detail extends Component {
                     }
                 </View>}
                 {isCompleted && <Text className="tags">
-                    Content Incorrect
+                    内容有误？
                 </Text>}
                 {isCompleted && <View className="feedback">
                     <Image src={gourpPng} className="group"></Image>
-                    <input placeholder="Send Feedback"></input>
+                    <Text>报告错误内容</Text>
                     <Image src={icSend} className="icsend"></Image>
                 </View>}
                 {isCompleted &&
